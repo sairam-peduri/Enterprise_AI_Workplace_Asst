@@ -1,0 +1,8 @@
+[
+    {
+        "ticket_id": "IT001",
+        "employee": "John",
+        "issue": "Password Reset",
+        "status": "Open"
+    }
+]
