@@ -1,0 +1,23 @@
+[
+    {
+        "employee_id": "EMP001",
+        "name": "Alice Johnson",
+        "email": "alice@enterprise.com",
+        "department": "HR",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP002",
+        "name": "Bob Smith",
+        "email": "bob@enterprise.com",
+        "department": "Finance",
+        "account_locked": true
+    },
+    {
+        "employee_id": "EMP003",
+        "name": "Charlie Brown",
+        "email": "charlie@enterprise.com",
+        "department": "IT",
+        "account_locked": false
+    }
+]
