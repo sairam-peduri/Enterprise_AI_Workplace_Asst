@@ -1,7 +1,6 @@
 from typing import Literal
 
-from state.state import EnterpriseState
-
+from src.state.state import EnterpriseState
 
 def supervisor_node(
     state: EnterpriseState,

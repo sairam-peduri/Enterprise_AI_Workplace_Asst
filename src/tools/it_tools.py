@@ -1,6 +1,7 @@
 from langchain_core.tools import tool 
-from utils.file_handler import load_json,save_json 
-from utils.paths import (EMPLOYEE_FILE,TICKET_FILE,SYSTEM_FILE)
+from src.utils.file_handler import load_json,save_json 
+from src.utils.paths import (EMPLOYEE_FILE,TICKET_FILE,SYSTEM_FILE)
+
 """
 IT Tools Module
 

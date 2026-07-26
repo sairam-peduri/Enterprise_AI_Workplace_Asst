@@ -1,8 +1,8 @@
 from langchain.agents import create_agent
 from langchain_ollama import ChatOllama
 
-from prompts.it_prompt import IT_AGENT_PROMPT
-from tools.it_tools import IT_TOOLS
+from src.prompts.it_prompt import IT_AGENT_PROMPT
+from src.tools.it_tools import IT_TOOLS
 
 llm = ChatOllama(
     model="llama3.2",

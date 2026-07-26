@@ -1,9 +1,4 @@
-import sys
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
-
-from agents.it_agent import it_agent
+from src.agents.it_agent import it_agent
 
 response = it_agent.invoke(
     {
