@@ -1,2 +1,9 @@
+<<<<<<< HEAD
+venv/
+data/chroma_db/
+__pycache__/
+*.py[cod]
+=======
 venv
 
+>>>>>>> f4b8ad59cacdc8a931e6f787dcc26d55cec95d2d
