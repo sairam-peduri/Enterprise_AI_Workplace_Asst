@@ -3,6 +3,7 @@ from langgraph.graph import StateGraph, START, END
 from src.state.state import EnterpriseState
 from src.graph.supervisor import supervisor_node
 from src.agents.it_agent import it_agent
+from src.agents.finance_agent import finance_agent
 
 def it_node(state: EnterpriseState):
     response = it_agent.invoke(state)
@@ -19,11 +20,11 @@ def hr_node(state: EnterpriseState):
 
 
 def finance_node(state: EnterpriseState):
-    """
-    Placeholder until Finance Agent is integrated.
-    """
-    return state
+    response = finance_agent.invoke(state)
 
+    return {
+        "messages": [response["messages"][-1]]
+    }
 
 def travel_node(state: EnterpriseState):
     """
