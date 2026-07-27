@@ -11,6 +11,9 @@ HR_DATA_DIR=DATA_DIR/"hr"
 FINANCE_DATA_DIR=DATA_DIR/"finance"
 
 TRAVEL_DATA_DIR=DATA_DIR/"travel"
+TRAVEL_FILE = TRAVEL_DATA_DIR / "travel_requests.json"
+TRAVEL_RATES_FILE = TRAVEL_DATA_DIR / "travel.json"
+ITINERARY_FILE = TRAVEL_DATA_DIR /"itenararies.json"
 
 EMPLOYEE_FILE=IT_DATA_DIR/"employees.json"
 
