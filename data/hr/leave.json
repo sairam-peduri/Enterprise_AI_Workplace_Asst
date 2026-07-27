@@ -1,0 +1,50 @@
+[
+    {
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "days": 2,
+        "leave_type": "Annual",
+        "reason": "Family visit",
+        "status": "Approved"
+    },
+    {
+        "employee_id": "EMP003",
+        "employee_name": "Charlie Brown",
+        "days": 1,
+        "leave_type": "Sick",
+        "reason": "Medical appointment",
+        "status": "Pending"
+    },
+    {
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "days": 2,
+        "leave_type": "Annual",
+        "reason": "Family visit",
+        "status": "Pending"
+    },
+    {
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "days": 2,
+        "leave_type": "",
+        "reason": "",
+        "status": "Pending"
+    },
+    {
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "days": 2,
+        "leave_type": "",
+        "reason": "",
+        "status": "Pending"
+    },
+    {
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "days": 2,
+        "leave_type": "",
+        "reason": "",
+        "status": "Pending"
+    }
+]

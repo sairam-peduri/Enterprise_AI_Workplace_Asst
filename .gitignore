@@ -5,5 +5,31 @@ __pycache__/
 *.py[cod]
 =======
 venv
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
+<<<<<<< HEAD
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+venv
+=======
 >>>>>>> f4b8ad59cacdc8a931e6f787dcc26d55cec95d2d
+>>>>>>> 73aac7e1e53ecc6f5b0423cbb0541a9affbb4ebe
