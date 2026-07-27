@@ -1,5 +1,5 @@
 import streamlit as st
-
+import traceback
 from langchain_core.messages import (
     HumanMessage,
     AIMessage,
@@ -105,6 +105,7 @@ def handle_user_input():
 
             except Exception as e:
 
-                st.error(
-                    f" {str(e)}"
-                )
+                # st.error(
+                #     f" {str(e)}"
+                # )
+                st.code(traceback.format_exc())
