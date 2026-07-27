@@ -1,10 +1,4 @@
-import sys
-from pathlib import Path
-
-# Add src to Python path
-sys.path.append(str(Path(__file__).resolve().parents[1]/"src"))
-
-from tools.it_tools import reset_password
+from src.tools.it_tools import reset_password
 
 print(
     reset_password.invoke(

@@ -17,6 +17,9 @@ def _load_tickets():
 def _save_tickets(tickets):
     save_json(TICKET_FILE,tickets) 
 
+def _load_systems():
+    return load_json(SYSTEM_FILE)
+
 def _find_employee(employee_id,employees):
     return next(
         (emp for emp in employees if emp["employee_id"]==employee_id),
@@ -44,13 +47,13 @@ def _generate_ticket_id(tickets):
 @tool 
 def reset_password(employee_id:str)->str:
     """
-    Reset an employee's password.
-    
-    Args:
-        employee_id:Employee ID 
-    
-    Returns:
-        Success message.
+    Reset the password for a specific employee.
+
+    Use ONLY when the user explicitly requests a password reset
+    and provides a valid employee ID such as EMP001.
+
+    Do NOT use this tool to answer questions about
+    how password resets work.
     """
 
     employees=_load_employees()
@@ -58,7 +61,10 @@ def reset_password(employee_id:str)->str:
     employee=_find_employee(employee_id,employees)
 
     if employee is None:
-        return f"Employee not found."
+        return (
+    f"No employee found with Employee ID '{employee_id}'. "
+    "Please verify the Employee ID and try again."
+)
     
     return (
         f"Password reset request has been successfully processed. "

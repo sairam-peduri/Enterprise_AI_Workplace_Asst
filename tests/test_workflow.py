@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from langchain_core.messages import HumanMessage
-from graph.workflow import workflow
+from src.graph.workflow import workflow
 
 state = {
     "messages": [
