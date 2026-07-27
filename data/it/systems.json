@@ -1,0 +1,18 @@
+[
+    {
+        "system": "Email Server",
+        "status": "Operational"
+    },
+    {
+        "system": "VPN",
+        "status": "Operational"
+    },
+    {
+        "system": "HR Portal",
+        "status": "Maintenance"
+    },
+    {
+        "system": "Employee Portal",
+        "status": "Operational"
+    }
+]

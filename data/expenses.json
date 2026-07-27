@@ -1,0 +1,16 @@
+[
+  {
+    "expense_id": "EXP1001",
+    "employee_id": "EMP001",
+    "amount": 850.0,
+    "currency": "INR",
+    "category": "Local Travel",
+    "description": "Cab from office to client meeting",
+    "expense_date": "2026-07-27",
+    "submitted_date": "2026-07-27",
+    "receipt_available": true,
+    "status": "Pending Manager Approval",
+    "approved_amount": null,
+    "remarks": "Submitted and awaiting manager approval"
+  }
+]
