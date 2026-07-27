@@ -1,26 +1,82 @@
 [
     {
         "employee_id": "EMP001",
-        "name": "Alice Johnson",
-        "email": "alice@enterprise.com",
+        "name": "Priya Sharma",
+        "email": "priya.sharma@enterprise.com",
+        "department": "HR",
+        "leave_balance": 12,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP002",
+        "name": "Rajesh Patel",
+        "email": "rajesh.patel@enterprise.com",
+        "department": "Finance",
+        "leave_balance": 8,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP003",
+        "name": "Vikram Singh",
+        "email": "vikram.singh@enterprise.com",
+        "department": "IT",
+        "leave_balance": 15,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP004",
+        "name": "Ananya Gupta",
+        "email": "ananya.gupta@enterprise.com",
+        "department": "HR",
+        "leave_balance": 6,
+        "account_locked": true
+    },
+    {
+        "employee_id": "EMP005",
+        "name": "Manoj Kumar",
+        "email": "manoj.kumar@enterprise.com",
+        "department": "Finance",
+        "leave_balance": 10,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP006",
+        "name": "Deepa Nair",
+        "email": "deepa.nair@enterprise.com",
+        "department": "IT",
+        "leave_balance": 20,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP007",
+        "name": "Sanjay Joshi",
+        "email": "sanjay.joshi@enterprise.com",
         "department": "HR",
         "leave_balance": 4,
         "account_locked": false
     },
     {
-        "employee_id": "EMP002",
-        "name": "Bob Smith",
-        "email": "bob@enterprise.com",
+        "employee_id": "EMP008",
+        "name": "Kavita Reddy",
+        "email": "kavita.reddy@enterprise.com",
         "department": "Finance",
-        "leave_balance": 10,
+        "leave_balance": 14,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP009",
+        "name": "Arjun Menon",
+        "email": "arjun.menon@enterprise.com",
+        "department": "IT",
+        "leave_balance": 7,
         "account_locked": true
     },
     {
-        "employee_id": "EMP003",
-        "name": "Charlie Brown",
-        "email": "charlie@enterprise.com",
-        "department": "IT",
-        "leave_balance": 8,
+        "employee_id": "EMP010",
+        "name": "Sneha Verma",
+        "email": "sneha.verma@enterprise.com",
+        "department": "Finance",
+        "leave_balance": 18,
         "account_locked": false
     }
 ]

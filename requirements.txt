@@ -1,47 +1,18 @@
-# --- Core LangChain & LangGraph ---
-langchain>=0.2.0
-langchain-core>=0.2.0
-langchain-community>=0.2.0
-langgraph>=0.1.0
+# Application runtime
+streamlit>=1.35.0
+langchain>=1.0.0,<2.0.0
+langchain-core>=1.0.0,<2.0.0
+langchain-community>=0.4.0,<1.0.0
+langgraph>=1.0.0,<2.0.0
+langchain-ollama>=1.0.0,<2.0.0
 
-# --- Knowledge Base & RAG (Your Specific Tools) ---
-langchain-ollama>=0.1.0
-langchain-chroma>=0.1.0
+# RAG
+langchain-chroma>=1.0.0,<2.0.0
+chromadb>=1.0.0,<2.0.0
+langchain-text-splitters>=1.0.0,<2.0.0
 pypdf>=4.2.0
 
-# --- Tracing & Evaluation ---
-langsmith>=0.1.0
-
-# --- User Interface & Deployment ---
-streamlit>=1.35.0
-
-# --- Utilities & Environment ---
+# Utilities
 python-dotenv>=1.0.0
 pydantic>=2.0.0
-
-# --- Optional/Teammate Dependencies ---
-# (If other agents like HR or IT are using OpenAI instead of Ollama)
-langchain-openai>=0.1.0
-# --- Web Framework / Chat UI ---
-streamlit>=1.35.0
-
-# --- Core AI & Agent Frameworks ---
-langchain>=0.2.0
-langchain-community>=0.2.0
-langchain-core>=0.2.0
-langchain-openai>=0.1.0
-langgraph>=0.1.0
-langchain_ollama==1.1.0
-
-# --- Knowledge Base & Vector Store (RAG) ---
-chromadb>=0.5.0
-pypdf>=4.2.0
-tiktoken>=0.7.0
-
-# --- Observability, Evaluation & Tracing ---
-langsmith>=0.1.0
-
-# --- Utilities & API Integration ---
-python-dotenv>=1.0.1
-pydantic>=2.7.0
 requests>=2.32.0

@@ -1,23 +1,72 @@
 [
     {
         "employee_id": "EMP001",
-        "name": "Alice Johnson",
-        "email": "alice@enterprise.com",
+        "name": "Priya Sharma",
+        "email": "priya.sharma@enterprise.com",
         "department": "HR",
         "account_locked": false
     },
     {
         "employee_id": "EMP002",
-        "name": "Bob Smith",
-        "email": "bob@enterprise.com",
+        "name": "Rajesh Patel",
+        "email": "rajesh.patel@enterprise.com",
         "department": "Finance",
-        "account_locked": true
+        "account_locked": false
     },
     {
         "employee_id": "EMP003",
-        "name": "Charlie Brown",
-        "email": "charlie@enterprise.com",
+        "name": "Vikram Singh",
+        "email": "vikram.singh@enterprise.com",
         "department": "IT",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP004",
+        "name": "Ananya Gupta",
+        "email": "ananya.gupta@enterprise.com",
+        "department": "HR",
+        "account_locked": true
+    },
+    {
+        "employee_id": "EMP005",
+        "name": "Manoj Kumar",
+        "email": "manoj.kumar@enterprise.com",
+        "department": "Finance",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP006",
+        "name": "Deepa Nair",
+        "email": "deepa.nair@enterprise.com",
+        "department": "IT",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP007",
+        "name": "Sanjay Joshi",
+        "email": "sanjay.joshi@enterprise.com",
+        "department": "HR",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP008",
+        "name": "Kavita Reddy",
+        "email": "kavita.reddy@enterprise.com",
+        "department": "Finance",
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP009",
+        "name": "Arjun Menon",
+        "email": "arjun.menon@enterprise.com",
+        "department": "IT",
+        "account_locked": true
+    },
+    {
+        "employee_id": "EMP010",
+        "name": "Sneha Verma",
+        "email": "sneha.verma@enterprise.com",
+        "department": "Finance",
         "account_locked": false
     }
 ]

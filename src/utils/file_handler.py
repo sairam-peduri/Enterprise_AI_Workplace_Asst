@@ -23,8 +23,11 @@ def load_json(file_path:Path)->Any:
     if not file_path.exists():
         return [] 
 
-    with open(file_path,"r",encoding='utf-8') as file:
-        return json.load(file)
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in {file_path.name}.") from exc
 
 def save_json(file_path:Path,data:Any)->None:
     """
@@ -35,6 +38,7 @@ def save_json(file_path:Path,data:Any)->None:
         data:Data to save. 
     """
 
+    file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path,"w",encoding='utf-8') as file:
         json.dump(data,file,indent=4)
 

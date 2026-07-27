@@ -21,8 +21,9 @@ def _load_systems():
     return load_json(SYSTEM_FILE)
 
 def _find_employee(employee_id,employees):
+    employee_id = employee_id.strip().upper()
     return next(
-        (emp for emp in employees if emp["employee_id"]==employee_id),
+        (emp for emp in employees if emp.get("employee_id") == employee_id),
         None,
     )
 
@@ -37,10 +38,12 @@ def _generate_ticket_id(tickets):
 
     if not tickets:
         return "IT001"
-    numbers=[
-        int(ticket["ticket_id"].replace("IT",""))
-        for ticket in tickets
-    ]
+    numbers=[]
+    for ticket in tickets:
+        try:
+            numbers.append(int(ticket.get("ticket_id", "").replace("IT", "")))
+        except ValueError:
+            continue
     next_number=max(numbers)+1 
     return f"IT{next_number:03d}"
 

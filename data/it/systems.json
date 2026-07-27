@@ -14,5 +14,29 @@
     {
         "system": "Employee Portal",
         "status": "Operational"
+    },
+    {
+        "system": "Finance System",
+        "status": "Operational"
+    },
+    {
+        "system": "CRM",
+        "status": "Operational"
+    },
+    {
+        "system": "Intranet",
+        "status": "Degraded Performance"
+    },
+    {
+        "system": "Backup Server",
+        "status": "Operational"
+    },
+    {
+        "system": "Network Switch",
+        "status": "Operational"
+    },
+    {
+        "system": "Video Conferencing",
+        "status": "Under Maintenance"
     }
 ]

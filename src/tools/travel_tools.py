@@ -45,12 +45,14 @@ def _generate_request_id(requests):
     if not requests:
         return "TR001"
 
-    numbers = [
-        int(request["request_id"].replace("TR", ""))
-        for request in requests
-    ]
+    numbers = []
+    for request in requests:
+        try:
+            numbers.append(int(request.get("request_id", "").replace("TR", "")))
+        except ValueError:
+            continue
 
-    next_number = max(numbers) + 1
+    next_number = max(numbers, default=0) + 1
 
     return f"TR{next_number:03d}"
 
@@ -118,9 +120,11 @@ def estimate_budget(
         Estimated travel budget breakdown.
     """
 
+    if days <= 0:
+        return "Travel duration must be at least one day."
     rates = load_json(TRAVEL_RATES_FILE)
 
-    city = rates.get(destination)
+    city = next((value for key, value in rates.items() if key.lower() == destination.strip().lower()), None)
 
     if city is None:
         return (

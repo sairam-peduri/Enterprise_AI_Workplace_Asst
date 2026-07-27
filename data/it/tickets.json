@@ -1,0 +1,72 @@
+[
+    {
+        "ticket_id": "IT001",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "issue": "Password reset",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT002",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "issue": "VPN access not working",
+        "status": "In Progress"
+    },
+    {
+        "ticket_id": "IT003",
+        "employee_id": "EMP003",
+        "employee_name": "Vikram Singh",
+        "issue": "Software installation request - Docker Desktop",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT004",
+        "employee_id": "EMP004",
+        "employee_name": "Ananya Gupta",
+        "issue": "Account unlock request",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT005",
+        "employee_id": "EMP005",
+        "employee_name": "Manoj Kumar",
+        "issue": "Laptop screen flickering issue",
+        "status": "Resolved"
+    },
+    {
+        "ticket_id": "IT006",
+        "employee_id": "EMP006",
+        "employee_name": "Deepa Nair",
+        "issue": "Access to production database",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT007",
+        "employee_id": "EMP007",
+        "employee_name": "Sanjay Joshi",
+        "issue": "New laptop setup required",
+        "status": "In Progress"
+    },
+    {
+        "ticket_id": "IT008",
+        "employee_id": "EMP008",
+        "employee_name": "Kavita Reddy",
+        "issue": "Email client configuration issue",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT009",
+        "employee_id": "EMP009",
+        "employee_name": "Arjun Menon",
+        "issue": "Account unlock request",
+        "status": "Open"
+    },
+    {
+        "ticket_id": "IT010",
+        "employee_id": "EMP010",
+        "employee_name": "Sneha Verma",
+        "issue": "Printer not responding",
+        "status": "Resolved"
+    }
+]

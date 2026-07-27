@@ -1,85 +1,110 @@
-import os
-from pathlib import Path
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-from langchain_core.tools import tool
+"""Lazy, persistent PDF retrieval for the knowledge agent."""
 
-# Dynamically locate the data/ directory and setup a path for Chroma to save its DB
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+from functools import lru_cache
+from pathlib import Path
+
+import requests
+
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.tools import tool
+from langchain_core.embeddings import Embeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = BASE_DIR / "data"
 CHROMA_PERSIST_DIR = DATA_DIR / "chroma_db"
 
-def _get_or_create_vector_store():
-    """
-    Loads existing Chroma DB or processes the 4 PDFs to create a new one.
-    """
-    # Initialize the local Ollama embedding model
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
-    
-    # If the database already exists, just load it
-    if CHROMA_PERSIST_DIR.exists() and any(CHROMA_PERSIST_DIR.iterdir()):
-        return Chroma(
-            persist_directory=str(CHROMA_PERSIST_DIR),
-            embedding_function=embeddings
-        )
-    
-    # Otherwise, read the PDFs from the data/ folder
-    pdf_files = list(DATA_DIR.glob("*.pdf"))
-    if not pdf_files:
-        raise FileNotFoundError(f"No PDF files found in {DATA_DIR}")
-        
-    docs = []
-    for pdf_path in pdf_files:
-        loader = PyPDFLoader(str(pdf_path))
-        docs.extend(loader.load())
-        
-    # Split the documents into manageable chunks for the LLM
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, 
-        chunk_overlap=200
-    )
-    splits = text_splitter.split_documents(docs)
-    
-    # Create the vector store and persist it to disk
-    vectorstore = Chroma.from_documents(
-        documents=splits, 
-        embedding=embeddings, 
-        persist_directory=str(CHROMA_PERSIST_DIR)
-    )
-    return vectorstore
 
-# Global initialization so it only loads once per session
-try:
-    _vector_store = _get_or_create_vector_store()
-except Exception as e:
-    _vector_store = None
-    print(f"Warning: Could not initialize RAG vector store. {e}")
+class LocalOllamaEmbeddings(Embeddings):
+    """Small-batch Ollama embedding adapter compatible with Chroma.
+
+    The installed Ollama server can reject the very large batch sent by the
+    LangChain adapter while indexing all policy PDFs. Batching locally keeps
+    indexing reliable without changing the local inference backend.
+    """
+
+    model: str = "nomic-embed-text"
+    batch_size: int = 8
+
+    def _embed(self, inputs: list[str]) -> list[list[float]]:
+        response = requests.post(
+            "http://127.0.0.1:11434/api/embed",
+            json={"model": self.model, "input": inputs, "keep_alive": "10m"},
+            timeout=120,
+        )
+        response.raise_for_status()
+        return response.json()["embeddings"]
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        vectors = []
+        for start in range(0, len(texts), self.batch_size):
+            vectors.extend(self._embed(texts[start : start + self.batch_size]))
+        return vectors
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed([text])[0]
+
+
+@lru_cache(maxsize=1)
+def _get_or_create_vector_store():
+    """Build the Chroma collection on first use, rather than during import."""
+    try:
+        from langchain_chroma import Chroma
+    except ImportError as exc:
+        raise RuntimeError(
+            "RAG dependencies are missing. Run `pip install -r requirements.txt`."
+        ) from exc
+
+    embeddings = LocalOllamaEmbeddings()
+    if CHROMA_PERSIST_DIR.exists() and any(CHROMA_PERSIST_DIR.iterdir()):
+        vector_store = Chroma(
+            persist_directory=str(CHROMA_PERSIST_DIR), embedding_function=embeddings
+        )
+        # An interrupted first indexing run creates an empty SQLite store. Do not
+        # mistake it for a ready knowledge base.
+        if vector_store._collection.count() > 0:
+            return vector_store
+        vector_store.delete_collection()
+
+    pdf_files = sorted(DATA_DIR.glob("*.pdf"))
+    if not pdf_files:
+        raise FileNotFoundError("No policy PDFs were found in the data directory.")
+
+    documents = []
+    for pdf_path in pdf_files:
+        documents.extend(PyPDFLoader(str(pdf_path)).load())
+    chunks = RecursiveCharacterTextSplitter(
+        chunk_size=1_000, chunk_overlap=200
+    ).split_documents(documents)
+    try:
+        return Chroma.from_documents(
+            documents=chunks,
+            embedding=embeddings,
+            persist_directory=str(CHROMA_PERSIST_DIR),
+        )
+    except Exception:
+        # Do not retain a partial collection after an interrupted embedding run.
+        if CHROMA_PERSIST_DIR.exists():
+            incomplete = Chroma(
+                persist_directory=str(CHROMA_PERSIST_DIR), embedding_function=embeddings
+            )
+            incomplete.delete_collection()
+        raise
 
 
 @tool
 def search_policy(query: str) -> str:
-    """
-    Perform a semantic search across all enterprise company policies, employee handbooks, and guidelines.
-    
-    Args:
-        query: The user's question or search topic (e.g., 'What is the remote work policy?').
-    """
-    if not _vector_store:
-        return "Error: The Knowledge Base is currently offline or uninitialized."
-    
-    # Retrieve the top 3 most relevant chunks from the PDFs
-    results = _vector_store.similarity_search(query, k=3)
-    
+    """Search the official company policy PDFs and return cited source excerpts."""
+    try:
+        results = _get_or_create_vector_store().similarity_search(query, k=3)
+    except Exception as exc:
+        return f"Knowledge base unavailable: {exc}"
     if not results:
         return "No relevant information found in the company documents."
-        
-    # Format the retrieved chunks clearly for the agent to read
-    formatted_results = []
-    for doc in results:
-        source_file = Path(doc.metadata.get('source', 'Unknown')).name
-        page = doc.metadata.get('page', 'Unknown')
-        formatted_results.append(f"--- Source: {source_file} (Page {page}) ---\n{doc.page_content}")
-        
-    return "\n\n".join(formatted_results)
+
+    excerpts = []
+    for document in results:
+        source = Path(document.metadata.get("source", "Unknown")).name
+        page = int(document.metadata.get("page", 0)) + 1
+        excerpts.append(f"--- Source: {source} (Page {page}) ---\n{document.page_content}")
+    return "\n\n".join(excerpts)
