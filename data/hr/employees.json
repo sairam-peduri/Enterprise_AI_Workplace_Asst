@@ -1,0 +1,26 @@
+[
+    {
+        "employee_id": "EMP001",
+        "name": "Alice Johnson",
+        "email": "alice@enterprise.com",
+        "department": "HR",
+        "leave_balance": 4,
+        "account_locked": false
+    },
+    {
+        "employee_id": "EMP002",
+        "name": "Bob Smith",
+        "email": "bob@enterprise.com",
+        "department": "Finance",
+        "leave_balance": 10,
+        "account_locked": true
+    },
+    {
+        "employee_id": "EMP003",
+        "name": "Charlie Brown",
+        "email": "charlie@enterprise.com",
+        "department": "IT",
+        "leave_balance": 8,
+        "account_locked": false
+    }
+]
