@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 venv/
 data/chroma_db/
 __pycache__/
 *.py[cod]
-=======
 venv
 __pycache__/
 **/__pycache__/
@@ -15,6 +13,9 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 
+<<<<<<< HEAD
+.venv
+=======
 <<<<<<< HEAD
 # Python
 __pycache__/
@@ -33,3 +34,4 @@ venv
 =======
 >>>>>>> f4b8ad59cacdc8a931e6f787dcc26d55cec95d2d
 >>>>>>> 73aac7e1e53ecc6f5b0423cbb0541a9affbb4ebe
+>>>>>>> 2e0753792815392e6c88461b03b15711e3fecba8

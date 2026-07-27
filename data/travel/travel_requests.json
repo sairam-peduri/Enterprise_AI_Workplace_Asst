@@ -1,0 +1,35 @@
+[
+    {
+        "request_id": "TR001",
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "source": "Hyderabad",
+        "destination": "Delhi",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-13",
+        "purpose": "Client Meeting",
+        "status": "Pending Approval"
+    },
+    {
+        "request_id": "TR002",
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "source": "Hyderabad",
+        "destination": "Delhi",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-13",
+        "purpose": "Client Meeting",
+        "status": "Pending Approval"
+    },
+    {
+        "request_id": "TR003",
+        "employee_id": "EMP001",
+        "employee_name": "Alice Johnson",
+        "source": "Hyderabad",
+        "destination": "Delhi",
+        "start_date": "2026-08-10",
+        "end_date": "2026-08-13",
+        "purpose": "Client Meeting",
+        "status": "Cancelled"
+    }
+]

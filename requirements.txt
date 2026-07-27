@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # --- Core LangChain & LangGraph ---
 langchain>=0.2.0
 langchain-core>=0.2.0
@@ -23,7 +22,6 @@ pydantic>=2.0.0
 # --- Optional/Teammate Dependencies ---
 # (If other agents like HR or IT are using OpenAI instead of Ollama)
 langchain-openai>=0.1.0
-=======
 # --- Web Framework / Chat UI ---
 streamlit>=1.35.0
 
@@ -47,4 +45,3 @@ langsmith>=0.1.0
 python-dotenv>=1.0.1
 pydantic>=2.7.0
 requests>=2.32.0
->>>>>>> f4b8ad59cacdc8a931e6f787dcc26d55cec95d2d

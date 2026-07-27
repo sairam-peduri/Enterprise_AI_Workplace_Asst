@@ -1,0 +1,62 @@
+{
+  "Bangalore": {
+    "flight": 4500,
+    "hotel_per_day": 3200,
+    "food_per_day": 1000,
+    "transport_per_day": 600
+  },
+  "Hyderabad": {
+    "flight": 3000,
+    "hotel_per_day": 2800,
+    "food_per_day": 900,
+    "transport_per_day": 500
+  },
+  "Chennai": {
+    "flight": 5000,
+    "hotel_per_day": 3000,
+    "food_per_day": 1000,
+    "transport_per_day": 550
+  },
+  "Mumbai": {
+    "flight": 7000,
+    "hotel_per_day": 4000,
+    "food_per_day": 1200,
+    "transport_per_day": 700
+  },
+  "Delhi": {
+    "flight": 9000,
+    "hotel_per_day": 4500,
+    "food_per_day": 1200,
+    "transport_per_day": 700
+  },
+  "Pune": {
+    "flight": 5500,
+    "hotel_per_day": 3200,
+    "food_per_day": 1000,
+    "transport_per_day": 600
+  },
+  "Kolkata": {
+    "flight": 8500,
+    "hotel_per_day": 3800,
+    "food_per_day": 1100,
+    "transport_per_day": 650
+  },
+  "Ahmedabad": {
+    "flight": 6000,
+    "hotel_per_day": 3000,
+    "food_per_day": 950,
+    "transport_per_day": 550
+  },
+  "Jaipur": {
+    "flight": 6500,
+    "hotel_per_day": 2900,
+    "food_per_day": 900,
+    "transport_per_day": 500
+  },
+  "Visakhapatnam": {
+    "flight": 4000,
+    "hotel_per_day": 2700,
+    "food_per_day": 900,
+    "transport_per_day": 500
+  }
+}

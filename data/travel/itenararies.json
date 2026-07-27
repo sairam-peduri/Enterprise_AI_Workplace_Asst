@@ -1,0 +1,87 @@
+{
+  "Client Meeting": {
+    "arrival": [
+      "Travel to {destination}",
+      "Hotel check-in",
+      "Project team briefing"
+    ],
+    "business": [
+      "Client meeting",
+      "Project discussion",
+      "Business lunch",
+      "Review action items"
+    ],
+    "departure": [
+      "Final presentation",
+      "Return journey"
+    ]
+  },
+
+  "Training": {
+    "arrival": [
+      "Travel to {destination}",
+      "Training registration",
+      "Orientation session"
+    ],
+    "business": [
+      "Technical training",
+      "Hands-on lab",
+      "Knowledge assessment"
+    ],
+    "departure": [
+      "Certification assessment",
+      "Return journey"
+    ]
+  },
+
+  "Conference": {
+    "arrival": [
+      "Travel to {destination}",
+      "Conference registration",
+      "Opening keynote"
+    ],
+    "business": [
+      "Technical sessions",
+      "Networking",
+      "Panel discussion"
+    ],
+    "departure": [
+      "Closing ceremony",
+      "Return journey"
+    ]
+  },
+
+  "Customer Visit": {
+    "arrival": [
+      "Travel to {destination}",
+      "Hotel check-in",
+      "Preparation meeting"
+    ],
+    "business": [
+      "Customer presentation",
+      "Requirement gathering",
+      "Solution discussion"
+    ],
+    "departure": [
+      "Customer feedback",
+      "Return journey"
+    ]
+  },
+
+  "Audit": {
+    "arrival": [
+      "Travel to {destination}",
+      "Audit kickoff meeting",
+      "Document collection"
+    ],
+    "business": [
+      "Financial audit",
+      "Compliance verification",
+      "Management discussion"
+    ],
+    "departure": [
+      "Audit summary",
+      "Return journey"
+    ]
+  }
+}
