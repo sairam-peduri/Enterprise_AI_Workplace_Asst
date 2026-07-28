@@ -183,23 +183,44 @@ def render_sidebar() -> None:
                 if st.button("Continue as Guest", use_container_width=True, type="primary"):
                     st.session_state.logged_in = True
                     st.rerun()
+            elif mode == "HR Login":
+                hr_ids = [e.get("employee_id") for e in auth.get_all_employees() if e.get("department", "").upper() == "HR"]
+                if not hr_ids:
+                    st.warning("No HR employees found.")
+                else:
+                    selected_id = st.selectbox("HR Employee ID", hr_ids, index=0)
+                    password = st.text_input("Password", type="password", placeholder="Enter HR password")
+                    if st.button("Login as HR", use_container_width=True, type="primary"):
+                        if not password:
+                            st.error("Please enter your password")
+                        elif auth.is_account_locked(selected_id):
+                            st.error("Account is locked. Please contact IT support.")
+                        elif auth.validate_password(selected_id, password):
+                            st.session_state.logged_in = True
+                            st.session_state.user_id = selected_id
+                            st.session_state.user_role = "hr"
+                            st.rerun()
+                        else:
+                            st.error("Invalid password. Please try again.")
             else:
-                emp_ids = auth.get_all_employee_ids()
-                selected_id = st.selectbox("Employee ID", emp_ids, index=0)
-                password = st.text_input("Password", type="password", placeholder="Enter password")
-                if st.button("Login", use_container_width=True, type="primary"):
-                    if not password:
-                        st.error("Please enter your password")
-                    elif auth.is_account_locked(selected_id):
-                        st.error("Account is locked. Please contact IT support.")
-                    elif auth.validate_password(selected_id, password):
-                        st.session_state.logged_in = True
-                        st.session_state.user_id = selected_id
-                        is_hr = auth.is_hr(selected_id)
-                        st.session_state.user_role = "hr" if is_hr else "employee"
-                        st.rerun()
-                    else:
-                        st.error("Invalid password. Please try again.")
+                non_hr_ids = [e.get("employee_id") for e in auth.get_all_employees() if e.get("department", "").upper() != "HR"]
+                if not non_hr_ids:
+                    st.warning("No employee accounts found.")
+                else:
+                    selected_id = st.selectbox("Employee ID", non_hr_ids, index=0)
+                    password = st.text_input("Password", type="password", placeholder="Enter password")
+                    if st.button("Login", use_container_width=True, type="primary"):
+                        if not password:
+                            st.error("Please enter your password")
+                        elif auth.is_account_locked(selected_id):
+                            st.error("Account is locked. Please contact IT support.")
+                        elif auth.validate_password(selected_id, password):
+                            st.session_state.logged_in = True
+                            st.session_state.user_id = selected_id
+                            st.session_state.user_role = "employee"
+                            st.rerun()
+                        else:
+                            st.error("Invalid password. Please try again.")
         else:
             # ── Logged-in user info ──
             user_role = st.session_state.user_role

@@ -1,10 +1,35 @@
 {
   "f48b044a-8d69-42b8-8b73-49d784bd9566": {
     "id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
-    "title": "New conversation",
+    "title": "hi",
     "created_at": "2026-07-28T15:21:55",
-    "messages": [],
-    "activity": [],
+    "messages": [
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      }
+    ],
+    "activity": [
+      {
+        "timestamp": "2026-07-28T22:34:34",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 1
+      },
+      {
+        "timestamp": "2026-07-28T22:34:34",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "general_agent"
+      }
+    ],
     "pending_leave": null,
     "pending_leave_balance": null,
     "pending_it_ticket": null,
