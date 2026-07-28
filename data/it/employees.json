@@ -4,6 +4,7 @@
         "name": "Priya Sharma",
         "email": "priya.sharma@enterprise.com",
         "department": "HR",
+        "password": "emp001",
         "account_locked": false
     },
     {
@@ -11,6 +12,7 @@
         "name": "Rajesh Patel",
         "email": "rajesh.patel@enterprise.com",
         "department": "Finance",
+        "password": "emp002",
         "account_locked": false
     },
     {
@@ -18,6 +20,7 @@
         "name": "Vikram Singh",
         "email": "vikram.singh@enterprise.com",
         "department": "IT",
+        "password": "emp003",
         "account_locked": false
     },
     {
@@ -25,6 +28,7 @@
         "name": "Ananya Gupta",
         "email": "ananya.gupta@enterprise.com",
         "department": "HR",
+        "password": "emp004",
         "account_locked": true
     },
     {
@@ -32,6 +36,7 @@
         "name": "Manoj Kumar",
         "email": "manoj.kumar@enterprise.com",
         "department": "Finance",
+        "password": "emp005",
         "account_locked": false
     },
     {
@@ -39,6 +44,7 @@
         "name": "Deepa Nair",
         "email": "deepa.nair@enterprise.com",
         "department": "IT",
+        "password": "emp006",
         "account_locked": false
     },
     {
@@ -46,6 +52,7 @@
         "name": "Sanjay Joshi",
         "email": "sanjay.joshi@enterprise.com",
         "department": "HR",
+        "password": "emp007",
         "account_locked": false
     },
     {
@@ -53,6 +60,7 @@
         "name": "Kavita Reddy",
         "email": "kavita.reddy@enterprise.com",
         "department": "Finance",
+        "password": "emp008",
         "account_locked": false
     },
     {
@@ -60,6 +68,7 @@
         "name": "Arjun Menon",
         "email": "arjun.menon@enterprise.com",
         "department": "IT",
+        "password": "emp009",
         "account_locked": true
     },
     {
@@ -67,6 +76,7 @@
         "name": "Sneha Verma",
         "email": "sneha.verma@enterprise.com",
         "department": "Finance",
+        "password": "emp010",
         "account_locked": false
     }
 ]

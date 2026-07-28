@@ -1,0 +1,54 @@
+[
+  {
+    "event_id": "TRN001",
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "department": "HR",
+    "event_type": "training_expiry",
+    "severity": "High",
+    "source_system": "LMS",
+    "title": "Cybersecurity Training Expires Tomorrow",
+    "description": "Annual cybersecurity awareness training due to expire on 2026-07-29.",
+    "due_date": "2026-07-29",
+    "metadata": {"course_name": "Cybersecurity Awareness 2026", "completion_required_by": "2026-07-29"}
+  },
+  {
+    "event_id": "TRN002",
+    "employee_id": "EMP002",
+    "employee_name": "Rajesh Patel",
+    "department": "Finance",
+    "event_type": "training_expiry",
+    "severity": "Medium",
+    "source_system": "LMS",
+    "title": "Data Privacy Training Due in 7 Days",
+    "description": "Mandatory data privacy training expires on 2026-08-04.",
+    "due_date": "2026-08-04",
+    "metadata": {"course_name": "Data Privacy Compliance", "completion_required_by": "2026-08-04"}
+  },
+  {
+    "event_id": "TRN003",
+    "employee_id": "EMP003",
+    "employee_name": "Vikram Singh",
+    "department": "IT",
+    "event_type": "training_expiry",
+    "severity": "Critical",
+    "source_system": "LMS",
+    "title": "Security Certification Expires Today",
+    "description": "AWS Security Specialty certification expires today.",
+    "due_date": "2026-07-28",
+    "metadata": {"certification": "AWS Security Specialty", "renewal_url": "https://aws.amazon.com/certification"}
+  },
+  {
+    "event_id": "TRN004",
+    "employee_id": "EMP005",
+    "employee_name": "Manoj Kumar",
+    "department": "Sales",
+    "event_type": "training_expiry",
+    "severity": "High",
+    "source_system": "LMS",
+    "title": "Sales Compliance Training Due in 3 Days",
+    "description": "Mandatory sales compliance training expires on 2026-07-31.",
+    "due_date": "2026-07-31",
+    "metadata": {"course_name": "Sales Compliance 2026", "completion_required_by": "2026-07-31"}
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "event_id": "DEP001",
+    "employee_id": "EMP009",
+    "employee_name": "Arjun Menon",
+    "department": "IT",
+    "event_type": "deployment_conflict",
+    "severity": "High",
+    "source_system": "DevOps",
+    "title": "Production Deployment During Leave",
+    "description": "Scheduled production deployment on 2026-08-01 conflicts with approved leave.",
+    "due_date": "2026-08-01",
+    "metadata": {"deployment_id": "DEP-2026-045", "leave_id": "LV009", "environment": "Production"}
+  },
+  {
+    "event_id": "DEP002",
+    "employee_id": "EMP003",
+    "employee_name": "Vikram Singh",
+    "department": "IT",
+    "event_type": "leave_conflict",
+    "severity": "High",
+    "source_system": "HR_System",
+    "title": "Leave Overlaps Sprint Deadline",
+    "description": "Approved leave from 2026-08-04 to 2026-08-08 overlaps with sprint release.",
+    "due_date": "2026-08-04",
+    "metadata": {"leave_id": "LV003", "sprint_id": "SPRINT-24", "release_date": "2026-08-07"}
+  }
+]

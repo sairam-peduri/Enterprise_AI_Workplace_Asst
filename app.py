@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+import json
 import re
+from pathlib import Path
 from uuid import uuid4
 
 import requests
@@ -38,6 +40,9 @@ from src.tools.travel_tools import (
 )
 from src.utils.logging_config import LOG_FILE, capture_activity, record_event
 from src.utils.session_persistence import load_sessions, save_sessions
+from src.proactive.proactive_engine import ProactiveEngine
+from src.proactive.event_models import Recommendation, Severity
+from src.auth.auth_manager import AuthManager
 
 
 st.set_page_config(
@@ -74,6 +79,9 @@ def _new_session() -> dict:
         "pending_reimbursement": None,
         "pending_budget": None,
         "pending_travel_plan": None,
+        "pending_proactive_rec": None,
+        "proactive_recommendations": [],
+        "pending_approvals": [],
     }
 
 
@@ -92,7 +100,12 @@ def initialize_sessions() -> None:
                 session["pending_reimbursement"] = None
                 session["pending_budget"] = None
                 session["pending_travel_plan"] = None
+                session["pending_employee_leave"] = None
+                session["pending_employee_expense"] = None
+                session["pending_employee_ticket"] = None
                 session.setdefault("activity", [])
+                session.setdefault("proactive_recommendations", [])
+                session.setdefault("pending_approvals", [])
             st.session_state.chat_sessions = saved
             st.session_state.active_session_id = next(iter(saved))
         else:
@@ -111,6 +124,11 @@ def initialize_sessions() -> None:
             session.setdefault("pending_reimbursement", None)
             session.setdefault("pending_budget", None)
             session.setdefault("pending_travel_plan", None)
+            session.setdefault("pending_employee_leave", None)
+            session.setdefault("pending_employee_expense", None)
+            session.setdefault("pending_employee_ticket", None)
+            session.setdefault("proactive_recommendations", [])
+            session.setdefault("pending_approvals", [])
 
 
 def active_session() -> dict:
@@ -144,9 +162,64 @@ def ollama_is_available() -> bool:
 
 def render_sidebar() -> None:
     """Render session navigation; no agent selection is exposed to the user."""
+    auth = AuthManager()
+
     with st.sidebar:
         st.title("Enterprise AI")
         st.caption("Workplace Assistant")
+
+        # ── Login Panel ──
+        if "logged_in" not in st.session_state:
+            st.session_state.logged_in = False
+            st.session_state.user_id = None
+            st.session_state.user_role = None
+
+        if not st.session_state.logged_in:
+            st.divider()
+            st.subheader("Login")
+            mode = st.radio("Mode", ["General (No Login)", "Employee Login", "HR Login"], horizontal=False)
+            if mode == "General (No Login)":
+                st.session_state.user_role = "general"
+                if st.button("Continue as Guest", use_container_width=True, type="primary"):
+                    st.session_state.logged_in = True
+                    st.rerun()
+            else:
+                emp_ids = auth.get_all_employee_ids()
+                selected_id = st.selectbox("Employee ID", emp_ids, index=0)
+                password = st.text_input("Password", type="password", placeholder="Enter password")
+                if st.button("Login", use_container_width=True, type="primary"):
+                    if not password:
+                        st.error("Please enter your password")
+                    elif auth.is_account_locked(selected_id):
+                        st.error("Account is locked. Please contact IT support.")
+                    elif auth.validate_password(selected_id, password):
+                        st.session_state.logged_in = True
+                        st.session_state.user_id = selected_id
+                        is_hr = auth.is_hr(selected_id)
+                        st.session_state.user_role = "hr" if is_hr else "employee"
+                        st.rerun()
+                    else:
+                        st.error("Invalid password. Please try again.")
+        else:
+            # ── Logged-in user info ──
+            user_role = st.session_state.user_role
+            user_id = st.session_state.user_id
+            if user_role == "general":
+                st.info("Mode: General (Guest)")
+            elif user_role == "hr":
+                name = auth.get_employee_name(user_id)
+                st.success(f"HR: {name} ({user_id})")
+            else:
+                name = auth.get_employee_name(user_id)
+                dept = auth.get_employee_department(user_id)
+                st.success(f"{name} ({user_id}) — {dept}")
+            if st.button("Logout", use_container_width=True):
+                st.session_state.logged_in = False
+                st.session_state.user_id = None
+                st.session_state.user_role = None
+                st.rerun()
+
+        st.divider()
 
         if st.button("+ New chat", use_container_width=True, type="primary"):
             start_new_session()
@@ -190,6 +263,182 @@ def render_sidebar() -> None:
             else:
                 st.caption("No activity recorded for this session yet.")
             st.caption(f"Persistent log file: {LOG_FILE}")
+
+        # ── Proactive Recommendations Panel (Role-Based) ──
+        st.divider()
+        user_role = st.session_state.user_role
+        user_id = st.session_state.user_id
+
+        with st.expander("Proactive Recommendations", expanded=True):
+            if st.button("Refresh Events", use_container_width=True, key="refresh_proactive"):
+                engine = ProactiveEngine()
+                if user_role == "general":
+                    recs = engine.run_pipeline()
+                elif user_role == "hr":
+                    all_recs = engine.run_pipeline()
+                    hr_recs = [r for r in all_recs if r.employee_id == user_id or auth.is_hr(r.employee_id)]
+                    pending = auth.get_pending_leave_requests()
+                    for idx, req in enumerate(pending):
+                        from src.proactive.event_models import EventType, EnterpriseEvent
+                        fake_event = EnterpriseEvent(
+                            event_id=f"PEND-LV-{req['employee_id']}-{idx}",
+                            employee_id=req["employee_id"],
+                            employee_name=req.get("employee_name", req["employee_id"]),
+                            department=auth.get_employee_department(req["employee_id"]),
+                            event_type=EventType.PENDING_APPROVAL,
+                            severity=Severity.HIGH,
+                            source_system="HRMS",
+                            title=f"Leave Approval Needed: {req.get('employee_name', req['employee_id'])}",
+                            description=f"{req.get('employee_name', req['employee_id'])} requests {req.get('days', '?')} days {req.get('leave_type', '?')} leave — {req.get('reason', '?')}",
+                            metadata={"days": req.get("days"), "leave_type": req.get("leave_type"), "reason": req.get("reason")},
+                        )
+                        from src.proactive.priority_engine import PriorityEngine
+                        score = PriorityEngine().score_event(fake_event)
+                        hr_recs.append(Recommendation(
+                            recommendation_id=f"APPROVE-LV-{req['employee_id']}-{req.get('days', 0)}-{idx}",
+                            employee_id=req["employee_id"],
+                            employee_name=req.get("employee_name", req["employee_id"]),
+                            title=f"Approve Leave: {req.get('employee_name', req['employee_id'])}",
+                            reason=f"{req.get('days', '?')} days {req.get('leave_type', '?')} — {req.get('reason', '?')}",
+                            business_impact="Employee awaiting leave approval",
+                            suggested_action="Approve or decline this leave request",
+                            priority=score.priority,
+                            confidence=score.confidence,
+                            approval_required=True,
+                            approval_type="leave_modification",
+                            metadata={"days": req.get("days"), "leave_type": req.get("leave_type"), "reason": req.get("reason")},
+                        ))
+                    expenses = auth.get_pending_expenses()
+                    for exp in expenses:
+                        from src.proactive.event_models import EventType, EnterpriseEvent
+                        fake_event = EnterpriseEvent(
+                            event_id=f"PEND-EXP-{exp.get('expense_id', '')}",
+                            employee_id=exp.get("employee_id", ""),
+                            employee_name=exp.get("employee_name", exp.get("employee_id", "")),
+                            department=auth.get_employee_department(exp.get("employee_id", "")),
+                            event_type=EventType.PENDING_APPROVAL,
+                            severity=Severity.MEDIUM,
+                            source_system="Finance",
+                            title=f"Expense Approval: {exp.get('description', exp.get('expense_id', '?'))}",
+                            description=f"Rs.{exp.get('amount', '?')} — {exp.get('description', '?')}",
+                            metadata={"amount": exp.get("amount"), "expense_id": exp.get("expense_id")},
+                        )
+                        from src.proactive.priority_engine import PriorityEngine
+                        score = PriorityEngine().score_event(fake_event)
+                        hr_recs.append(Recommendation(
+                            recommendation_id=f"APPROVE-EXP-{exp.get('expense_id', '')}",
+                            employee_id=exp.get("employee_id", ""),
+                            employee_name=exp.get("employee_name", exp.get("employee_id", "")),
+                            title=f"Approve Expense: Rs.{exp.get('amount', '?')}",
+                            reason=exp.get("description", "Expense submission"),
+                            business_impact="Employee awaiting expense reimbursement",
+                            suggested_action="Approve or decline this expense claim",
+                            priority=score.priority,
+                            confidence=score.confidence,
+                            approval_required=True,
+                            approval_type="expense_approval",
+                        ))
+                    recs = hr_recs
+                else:
+                    all_recs = engine.run_pipeline()
+                    recs = [r for r in all_recs if r.employee_id == user_id]
+                    pending = auth.get_pending_leave_for_employee(user_id)
+                    for req in pending:
+                        recs.append(Recommendation(
+                            recommendation_id=f"MY-LV-{req['employee_id']}-{req.get('days', 0)}",
+                            employee_id=req["employee_id"],
+                            employee_name=req.get("employee_name", req["employee_id"]),
+                            title=f"Your Leave Request: {req.get('days', '?')} days {req.get('leave_type', '?')}",
+                            reason=f"Status: Pending — {req.get('reason', '?')}",
+                            business_impact="Awaiting HR approval",
+                            suggested_action="Wait for HR to review your request",
+                            priority=Severity.LOW,
+                            confidence=0.9,
+                            approval_required=False,
+                        ))
+                    my_expenses = auth.get_pending_expenses_for_employee(user_id)
+                    for exp in my_expenses:
+                        recs.append(Recommendation(
+                            recommendation_id=f"MY-EXP-{exp.get('expense_id', '')}",
+                            employee_id=exp.get("employee_id", ""),
+                            employee_name=exp.get("employee_name", user_id),
+                            title=f"Your Expense: Rs.{exp.get('amount', '?')}",
+                            reason=f"Status: Pending — {exp.get('description', '?')}",
+                            business_impact="Awaiting finance approval",
+                            suggested_action="Wait for finance to review",
+                            priority=Severity.LOW,
+                            confidence=0.9,
+                            approval_required=False,
+                        ))
+                    my_tickets = auth.get_pending_tickets_for_employee(user_id)
+                    for t in my_tickets:
+                        recs.append(Recommendation(
+                            recommendation_id=f"MY-TKT-{t.get('ticket_id', '')}",
+                            employee_id=user_id,
+                            employee_name=auth.get_employee_name(user_id),
+                            title=f"Your IT Ticket: {t.get('issue', t.get('ticket_id', '?'))}",
+                            reason=f"Status: {t.get('status', 'Open')}",
+                            business_impact="Ticket in progress",
+                            suggested_action="Check ticket status",
+                            priority=Severity.LOW,
+                            confidence=0.9,
+                            approval_required=False,
+                        ))
+                session = active_session()
+                session["proactive_recommendations"] = [r.to_dict() for r in recs]
+                st.rerun()
+
+            session = active_session()
+            saved_recs = session.get("proactive_recommendations", [])
+            if saved_recs:
+                for rec_dict in saved_recs:
+                    rec = Recommendation(
+                        recommendation_id=rec_dict["recommendation_id"],
+                        employee_id=rec_dict["employee_id"],
+                        employee_name=rec_dict["employee_name"],
+                        title=rec_dict["title"],
+                        reason=rec_dict["reason"],
+                        business_impact=rec_dict["business_impact"],
+                        suggested_action=rec_dict["suggested_action"],
+                        priority=Severity(rec_dict["priority"]),
+                        confidence=rec_dict["confidence"],
+                        approval_required=rec_dict.get("approval_required", False),
+                        approval_type=rec_dict.get("approval_type", ""),
+                        metadata=rec_dict.get("metadata", {}),
+                    )
+                    priority_colors = {"Critical": "🔴", "High": "🟠", "Medium": "🟡", "Low": "🟢"}
+                    color = priority_colors.get(rec.priority.value, "⚪")
+                    st.caption(f"{color} {rec.title}")
+                    st.caption(f"   {rec.reason}")
+                    if rec.approval_required and user_role == "hr":
+                        col1, col2 = st.columns(2)
+                        if col1.button("Approve", key=f"approve_{rec.recommendation_id}", use_container_width=True):
+                            if rec.approval_type == "leave_modification":
+                                meta = rec.metadata
+                                auth.approve_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                            elif rec.approval_type == "expense_approval":
+                                exp_id = meta.get("expense_id", "")
+                                if exp_id:
+                                    auth.approve_expense(exp_id)
+                            active_session()["proactive_recommendations"] = [
+                                r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
+                            ]
+                            st.rerun()
+                        if col2.button("Decline", key=f"dismiss_{rec.recommendation_id}", use_container_width=True):
+                            if rec.approval_type == "leave_modification":
+                                meta = rec.metadata
+                                auth.decline_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                            elif rec.approval_type == "expense_approval":
+                                exp_id = meta.get("expense_id", "")
+                                if exp_id:
+                                    auth.decline_expense(exp_id)
+                            active_session()["proactive_recommendations"] = [
+                                r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
+                            ]
+                            st.rerun()
+            else:
+                st.caption("No proactive recommendations. Click Refresh to check.")
+
         if ollama_is_available():
             st.success("Ollama connected")
         else:
@@ -322,7 +571,9 @@ def handle_hr_leave_request(session: dict, prompt: str) -> str | None:
     # Only detect NEW leave application requests (exclude balance checks)
     is_leave_balance = any(w in normalized_prompt for w in (
         "check leave", "leave balance", "remaining leave", "leave remaining",
-        "how many leave", "how many days leave",
+        "how many leave", "how many days leave", "balance leave", "leaves left",
+        "leave left", "my leave", "balance leaves", "leaves balance",
+        "available leave", "leave available", "how much leave", "leave count",
     ))
     is_leave_request = (
         pending is not None or
@@ -379,9 +630,22 @@ def handle_hr_leave_balance_check(session: dict, prompt: str) -> str | None:
     is_check = any(w in normalized_prompt for w in (
         "check leave", "leave balance", "remaining leave", "leave remaining",
         "how many leave", "how many days leave", "balancing leave", "check remaining",
+        "balance leave", "leaves left", "leave left", "my leave",
+        "balance leaves", "leaves balance", "available leave", "leave available",
+        "how much leave", "leave count",
     ))
     if not is_check and pending is None:
         return None
+
+    user_id = st.session_state.get("user_id")
+    user_role = st.session_state.get("user_role")
+
+    # If logged in as employee, use their ID directly
+    if user_id and user_role in ("employee", "hr") and pending is None:
+        from src.tools.hr_tools import check_leave_balance
+        result = check_leave_balance.invoke({"employee_id": user_id})
+        record_event("hr_leave_balance_checked", employee_id=user_id)
+        return str(result)
 
     # Stage: Waiting for employee name
     if pending and pending["stage"] == "awaiting_name":
@@ -396,7 +660,7 @@ def handle_hr_leave_balance_check(session: dict, prompt: str) -> str | None:
         record_event("hr_leave_balance_checked", employee_id=employee["employee_id"])
         return str(result)
 
-    # Initial detection - ask for name
+    # Initial detection - ask for name (only for non-logged-in users)
     session["pending_leave_balance"] = {"stage": "awaiting_name"}
     record_event("hr_leave_balance_check_started")
     return "I can help you check your leave balance. Please provide your **full name** as recorded in the system."
@@ -1429,6 +1693,324 @@ def handle_travel_request(session: dict, prompt: str) -> str | None:
     return "I can help you with travel requests. Please provide your **full name** as recorded in the system."
 
 
+# ── General Chat Handler ──
+
+
+def handle_general_chat(prompt: str) -> str | None:
+    """Handle simple conversational messages that don't need a specialist."""
+    normalized = prompt.strip().casefold().strip("!.?")
+
+    # Simple acknowledgments
+    acknowledgments = {"okay", "ok", "okk", "k", "got it", "noted", "alright", "sure", "thanks", "thank you", "thank", "thx", "ty", "cool", "nice", "great", "good", "fine", "understood", "i see", "makes sense", "perfect", "awesome", "excellent", "wonderful", "fantastic"}
+    if normalized in acknowledgments:
+        responses = {
+            "okay": "Got it! Let me know if you need anything else.",
+            "ok": "Alright! Feel free to ask if you need help.",
+            "okk": "Sure! I'm here if you need anything.",
+            "k": "Noted! Let me know how I can help.",
+            "got it": "Great! Anything else you need?",
+            "noted": "Noted! Let me know if there's anything else.",
+            "alright": "Alright! I'm here whenever you need assistance.",
+            "sure": "Sure thing! What else can I help with?",
+            "thanks": "You're welcome! Happy to help.",
+            "thank you": "You're welcome! Let me know if you need anything else.",
+            "thank": "You're welcome! Anything else?",
+            "thx": "You're welcome!",
+            "ty": "You're welcome!",
+            "cool": "Great! Let me know if you need anything.",
+            "nice": "Glad you think so! Anything else I can help with?",
+            "great": "Thanks! Let me know if there's anything else.",
+            "good": "Good to hear! How else can I assist you?",
+            "fine": "Alright! Let me know if you need help.",
+            "understood": "Perfect! Feel free to reach out anytime.",
+            "i see": "Got it! Let me know if you have more questions.",
+            "makes sense": "Glad it makes sense! Anything else?",
+            "perfect": "Perfect! Let me know if you need anything.",
+            "awesome": "Thanks! I'm here to help.",
+            "excellent": "Thank you! Let me know how else I can assist.",
+            "wonderful": "Thanks! Happy to help anytime.",
+            "fantastic": "Thank you! Let me know if there's anything else.",
+        }
+        return responses.get(normalized, "Got it! Let me know if you need anything else.")
+
+    # Greetings
+    greetings = {"hi", "hello", "hey", "good morning", "good afternoon", "good evening", "howdy", "hola", "namaste"}
+    if normalized in greetings:
+        user_name = ""
+        user_id = st.session_state.get("user_id")
+        if user_id:
+            auth = AuthManager()
+            user_name = auth.get_employee_name(user_id)
+        greeting = f"Hello{', ' + user_name if user_name else ''}!" if normalized != "namaste" else "Namaste!"
+        return f"{greeting} How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else."
+
+    # How are you
+    how_are_you = {"how are you", "how r u", "how ru", "whats up", "what's up", "sup", "how's it going", "how is it going"}
+    if normalized in how_are_you:
+        return "I'm doing great, thanks for asking! How can I assist you today?"
+
+    # Goodbye
+    goodbyes = {"bye", "goodbye", "see you", "see ya", "later", "take care", "cya"}
+    if normalized in goodbyes:
+        return "Goodbye! Have a great day! Feel free to come back anytime you need help."
+
+    # Who are you
+    who_are_you = {"who are you", "what are you", "tell me about yourself", "about you"}
+    if normalized in who_are_you:
+        return "I'm Enterprise AI, your workplace assistant! I can help you with IT support, HR (leave, expenses), travel requests, and general workplace queries. Just ask naturally and I'll route your request to the right specialist."
+
+    return None
+
+
+# ── Employee Self-Service Handlers ──
+
+
+def handle_employee_leave_submit(session: dict, prompt: str) -> str | None:
+    """Allow logged-in employees to submit their own leave requests via chat."""
+    user_id = st.session_state.get("user_id")
+    user_role = st.session_state.get("user_role")
+    if not user_id or user_role not in ("employee", "hr"):
+        return None
+
+    normalized = prompt.strip().casefold()
+    trigger_words = {"apply leave", "submit leave", "request leave", "take leave", "need leave", "want leave", "leave request"}
+    is_leave = any(w in normalized for w in trigger_words)
+    # Exclude balance/remaining queries
+    is_balance = any(w in normalized for w in ("balance", "remaining", "left", "how many", "check"))
+    if is_balance:
+        is_leave = False
+
+    pending = session.get("pending_employee_leave")
+
+    if not is_leave and not pending:
+        return None
+
+    if pending and pending["stage"] == "awaiting_confirmation":
+        if normalized in {"yes", "y", "confirm"}:
+            auth = AuthManager()
+            result = auth.submit_leave_request(user_id, pending["days"], pending["leave_type"], pending["reason"])
+            session["pending_employee_leave"] = None
+            record_event("employee_leave_submitted", employee_id=user_id, days=pending["days"])
+            return (
+                f"Leave request submitted successfully!\n\n"
+                f"**Details:** {pending['days']} days {pending['leave_type']} — {pending['reason']}\n"
+                f"**Status:** Pending HR approval\n\n"
+                f"You will see updates in the Proactive Recommendations panel."
+            )
+        if normalized in {"no", "n", "cancel"}:
+            session["pending_employee_leave"] = None
+            return "Leave request cancelled."
+        return "Please reply **yes** to submit or **no** to cancel."
+
+    if pending and pending["stage"] == "collecting_details":
+        days, reason, leave_type = _leave_details(prompt)
+        if days is None or reason is None:
+            missing = []
+            if days is None:
+                missing.append("number of days")
+            if reason is None:
+                missing.append("reason")
+            return f"Please provide the missing details: **{', '.join(missing)}**. For example: `5 days, reason: fever`."
+        session["pending_employee_leave"] = {
+            "stage": "awaiting_confirmation",
+            "days": days,
+            "leave_type": leave_type,
+            "reason": reason,
+        }
+        return (
+            f"**Leave Request Summary:**\n"
+            f"- Employee: **{AuthManager().get_employee_name(user_id)}** ({user_id})\n"
+            f"- Days: **{days}**\n"
+            f"- Type: **{leave_type}**\n"
+            f"- Reason: **{reason}**\n\n"
+            f"Reply **yes** to submit or **no** to cancel."
+        )
+
+    if is_leave:
+        session["pending_employee_leave"] = {"stage": "collecting_details"}
+        return (
+            f"Sure, I can help you apply for leave.\n"
+            f"Please provide the **number of days**, **leave type** (Annual/Sick/Personal), and **reason**.\n"
+            f"Example: `3 days sick leave, reason: fever`"
+        )
+
+    return None
+
+
+def handle_employee_expense_submit(session: dict, prompt: str) -> str | None:
+    """Allow logged-in employees to submit their own expense claims via chat."""
+    user_id = st.session_state.get("user_id")
+    user_role = st.session_state.get("user_role")
+    if not user_id or user_role not in ("employee", "hr"):
+        return None
+
+    normalized = prompt.strip().casefold()
+    trigger_words = {"submit expense", "claim expense", "expense report", "reimbursement request", "file expense", "expense claim"}
+    is_expense = any(w in normalized for w in trigger_words)
+
+    pending = session.get("pending_employee_expense")
+
+    if not is_expense and not pending:
+        return None
+
+    if pending and pending["stage"] == "awaiting_confirmation":
+        if normalized in {"yes", "y", "confirm"}:
+            amount = pending["amount"]
+            desc = pending["description"]
+            emp_name = AuthManager().get_employee_name(user_id)
+            expenses_path = Path(__file__).resolve().parent / "data" / "finance" / "expenses.json"
+            expenses = []
+            if expenses_path.exists():
+                try:
+                    expenses = json.loads(expenses_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, IOError):
+                    expenses = []
+            import uuid
+            exp_id = f"EXP{str(uuid.uuid4())[:6].upper()}"
+            new_exp = {
+                "expense_id": exp_id,
+                "employee_id": user_id,
+                "employee_name": emp_name,
+                "amount": amount,
+                "description": desc,
+                "status": "Pending",
+                "submitted_at": datetime.now().isoformat(),
+            }
+            expenses.append(new_exp)
+            expenses_path.write_text(json.dumps(expenses, indent=2, ensure_ascii=False), encoding="utf-8")
+            session["pending_employee_expense"] = None
+            record_event("employee_expense_submitted", employee_id=user_id, amount=amount)
+            return (
+                f"Expense claim submitted successfully!\n\n"
+                f"**Details:** Rs.{amount} — {desc}\n"
+                f"**Expense ID:** {exp_id}\n"
+                f"**Status:** Pending finance approval\n\n"
+                f"You will see updates in the Proactive Recommendations panel."
+            )
+        if normalized in {"no", "n", "cancel"}:
+            session["pending_employee_expense"] = None
+            return "Expense claim cancelled."
+        return "Please reply **yes** to submit or **no** to cancel."
+
+    if pending and pending["stage"] == "collecting_details":
+        amount_match = re.search(r"\b(\d+(?:\.\d+)?)\b", prompt)
+        desc_match = re.search(r"(?:for|reason|description|what)\s*(.+)", prompt, flags=re.IGNORECASE)
+        if not amount_match:
+            return "Please provide the **amount**. For example: `2500 for office supplies`."
+        amount = float(amount_match.group(1))
+        description = desc_match.group(1).strip() if desc_match else "Expense claim"
+        session["pending_employee_expense"] = {
+            "stage": "awaiting_confirmation",
+            "amount": amount,
+            "description": description,
+        }
+        emp_name = AuthManager().get_employee_name(user_id)
+        return (
+            f"**Expense Claim Summary:**\n"
+            f"- Employee: **{emp_name}** ({user_id})\n"
+            f"- Amount: **Rs.{amount}**\n"
+            f"- Description: **{description}**\n\n"
+            f"Reply **yes** to submit or **no** to cancel."
+        )
+
+    if is_expense:
+        session["pending_employee_expense"] = {"stage": "collecting_details"}
+        return (
+            f"Sure, I can help you file an expense claim.\n"
+            f"Please provide the **amount** and **description**.\n"
+            f"Example: `2500 for office supplies`"
+        )
+
+    return None
+
+
+def handle_employee_ticket_submit(session: dict, prompt: str) -> str | None:
+    """Allow logged-in employees to raise IT tickets via chat."""
+    user_id = st.session_state.get("user_id")
+    user_role = st.session_state.get("user_role")
+    if not user_id or user_role not in ("employee", "hr"):
+        return None
+
+    normalized = prompt.strip().casefold()
+    trigger_words = {"raise ticket", "create ticket", "new ticket", "open ticket", "it ticket", "report issue", "report problem"}
+    is_ticket = any(w in normalized for w in trigger_words)
+
+    pending = session.get("pending_employee_ticket")
+
+    if not is_ticket and not pending:
+        return None
+
+    if pending and pending["stage"] == "awaiting_confirmation":
+        if normalized in {"yes", "y", "confirm"}:
+            issue = pending["issue"]
+            category = pending["category"]
+            emp_name = AuthManager().get_employee_name(user_id)
+            tickets_path = Path(__file__).resolve().parent / "data" / "it" / "tickets.json"
+            tickets = []
+            if tickets_path.exists():
+                try:
+                    tickets = json.loads(tickets_path.read_text(encoding="utf-8"))
+                except (json.JSONDecodeError, IOError):
+                    tickets = []
+            import uuid
+            ticket_id = f"TKT{str(uuid.uuid4())[:6].upper()}"
+            new_ticket = {
+                "ticket_id": ticket_id,
+                "employee_id": user_id,
+                "employee_name": emp_name,
+                "issue": issue,
+                "category": category,
+                "status": "Open",
+                "created_at": datetime.now().isoformat(),
+            }
+            tickets.append(new_ticket)
+            tickets_path.write_text(json.dumps(tickets, indent=2, ensure_ascii=False), encoding="utf-8")
+            session["pending_employee_ticket"] = None
+            record_event("employee_ticket_submitted", employee_id=user_id, category=category)
+            return (
+                f"IT ticket raised successfully!\n\n"
+                f"**Details:** {issue}\n"
+                f"**Category:** {category}\n"
+                f"**Ticket ID:** {ticket_id}\n"
+                f"**Status:** Open\n\n"
+                f"You will see updates in the Proactive Recommendations panel."
+            )
+        if normalized in {"no", "n", "cancel"}:
+            session["pending_employee_ticket"] = None
+            return "Ticket cancelled."
+        return "Please reply **yes** to submit or **no** to cancel."
+
+    if pending and pending["stage"] == "collecting_details":
+        issue = prompt.strip()
+        category = "General"
+        cat_match = re.search(r"\b(network|hardware|software|password|access|email|vpn|printer)\b", prompt, flags=re.IGNORECASE)
+        if cat_match:
+            category = cat_match.group(1).title()
+        session["pending_employee_ticket"] = {
+            "stage": "awaiting_confirmation",
+            "issue": issue,
+            "category": category,
+        }
+        emp_name = AuthManager().get_employee_name(user_id)
+        return (
+            f"**IT Ticket Summary:**\n"
+            f"- Employee: **{emp_name}** ({user_id})\n"
+            f"- Issue: **{issue}**\n"
+            f"- Category: **{category}**\n\n"
+            f"Reply **yes** to submit or **no** to cancel."
+        )
+
+    if is_ticket:
+        session["pending_employee_ticket"] = {"stage": "collecting_details"}
+        return (
+            f"Sure, I can help you raise an IT ticket.\n"
+            f"Please describe the **issue** you're facing.\n"
+            f"Example: `Unable to connect to VPN from home`"
+        )
+
+    return None
+
+
 def respond(prompt: str) -> None:
     """Append a user turn, route it, and save the response to this session only."""
     session = active_session()
@@ -1449,100 +2031,137 @@ def respond(prompt: str) -> None:
                         session_id=session["id"],
                         message_count=len(session["messages"]),
                     )
-                    leave_balance_response = handle_hr_leave_balance_check(session, prompt)
-                    if leave_balance_response is not None:
+                    # Employee self-service handlers (highest priority when logged in)
+                    emp_leave_response = handle_employee_leave_submit(session, prompt)
+                    if emp_leave_response is not None:
                         route = "hr_agent"
-                        response = AIMessage(content=leave_balance_response, additional_kwargs={"agent": "HR"})
+                        response = AIMessage(content=emp_leave_response, additional_kwargs={"agent": "HR"})
                         st.caption("Routed to HR")
-                        st.markdown(leave_balance_response)
+                        st.markdown(emp_leave_response)
                         session["messages"].append(response)
                         record_event("chat_request_completed", session_id=session["id"], route=route)
                     else:
-                        leave_response = handle_hr_leave_request(session, prompt)
-                        if leave_response is not None:
-                            route = "hr_agent"
-                            response = AIMessage(content=leave_response, additional_kwargs={"agent": "HR"})
-                            st.caption("Routed to HR")
-                            st.markdown(leave_response)
+                        emp_expense_response = handle_employee_expense_submit(session, prompt)
+                        if emp_expense_response is not None:
+                            route = "finance_agent"
+                            response = AIMessage(content=emp_expense_response, additional_kwargs={"agent": "Finance"})
+                            st.caption("Routed to Finance")
+                            st.markdown(emp_expense_response)
                             session["messages"].append(response)
                             record_event("chat_request_completed", session_id=session["id"], route=route)
                         else:
-                            it_action_response = handle_it_action_request(session, prompt)
-                            if it_action_response is not None:
+                            emp_ticket_response = handle_employee_ticket_submit(session, prompt)
+                            if emp_ticket_response is not None:
                                 route = "it_agent"
-                                response = AIMessage(content=it_action_response, additional_kwargs={"agent": "IT Support"})
+                                response = AIMessage(content=emp_ticket_response, additional_kwargs={"agent": "IT Support"})
                                 st.caption("Routed to IT Support")
-                                st.markdown(it_action_response)
+                                st.markdown(emp_ticket_response)
                                 session["messages"].append(response)
                                 record_event("chat_request_completed", session_id=session["id"], route=route)
                             else:
-                                it_response = handle_it_ticket_request(session, prompt)
-                                if it_response is not None:
-                                    route = "it_agent"
-                                    response = AIMessage(content=it_response, additional_kwargs={"agent": "IT Support"})
-                                    st.caption("Routed to IT Support")
-                                    st.markdown(it_response)
+                                leave_balance_response = handle_hr_leave_balance_check(session, prompt)
+                                if leave_balance_response is not None:
+                                    route = "hr_agent"
+                                    response = AIMessage(content=leave_balance_response, additional_kwargs={"agent": "HR"})
+                                    st.caption("Routed to HR")
+                                    st.markdown(leave_balance_response)
                                     session["messages"].append(response)
                                     record_event("chat_request_completed", session_id=session["id"], route=route)
                                 else:
-                                    reimb_response = handle_finance_reimbursement_check(session, prompt)
-                                    if reimb_response is not None:
-                                        route = "finance_agent"
-                                        response = AIMessage(content=reimb_response, additional_kwargs={"agent": "Finance"})
-                                        st.caption("Routed to Finance")
-                                        st.markdown(reimb_response)
+                                    leave_response = handle_hr_leave_request(session, prompt)
+                                    if leave_response is not None:
+                                        route = "hr_agent"
+                                        response = AIMessage(content=leave_response, additional_kwargs={"agent": "HR"})
+                                        st.caption("Routed to HR")
+                                        st.markdown(leave_response)
                                         session["messages"].append(response)
                                         record_event("chat_request_completed", session_id=session["id"], route=route)
                                     else:
-                                        finance_response = handle_finance_expense_request(session, prompt)
-                                        if finance_response is not None:
-                                            route = "finance_agent"
-                                            response = AIMessage(content=finance_response, additional_kwargs={"agent": "Finance"})
-                                            st.caption("Routed to Finance")
-                                            st.markdown(finance_response)
+                                        it_action_response = handle_it_action_request(session, prompt)
+                                        if it_action_response is not None:
+                                            route = "it_agent"
+                                            response = AIMessage(content=it_action_response, additional_kwargs={"agent": "IT Support"})
+                                            st.caption("Routed to IT Support")
+                                            st.markdown(it_action_response)
                                             session["messages"].append(response)
                                             record_event("chat_request_completed", session_id=session["id"], route=route)
                                         else:
-                                            budget_response = handle_estimate_budget(session, prompt)
-                                            if budget_response is not None:
-                                                route = "travel_agent"
-                                                response = AIMessage(content=budget_response, additional_kwargs={"agent": "Travel"})
-                                                st.caption("Routed to Travel")
-                                                st.markdown(budget_response)
+                                            it_response = handle_it_ticket_request(session, prompt)
+                                            if it_response is not None:
+                                                route = "it_agent"
+                                                response = AIMessage(content=it_response, additional_kwargs={"agent": "IT Support"})
+                                                st.caption("Routed to IT Support")
+                                                st.markdown(it_response)
                                                 session["messages"].append(response)
                                                 record_event("chat_request_completed", session_id=session["id"], route=route)
                                             else:
-                                                plan_response = handle_generate_travel_plan(session, prompt)
-                                                if plan_response is not None:
-                                                    route = "travel_agent"
-                                                    response = AIMessage(content=plan_response, additional_kwargs={"agent": "Travel"})
-                                                    st.caption("Routed to Travel")
-                                                    st.markdown(plan_response)
+                                                reimb_response = handle_finance_reimbursement_check(session, prompt)
+                                                if reimb_response is not None:
+                                                    route = "finance_agent"
+                                                    response = AIMessage(content=reimb_response, additional_kwargs={"agent": "Finance"})
+                                                    st.caption("Routed to Finance")
+                                                    st.markdown(reimb_response)
                                                     session["messages"].append(response)
                                                     record_event("chat_request_completed", session_id=session["id"], route=route)
                                                 else:
-                                                    travel_response = handle_travel_request(session, prompt)
-                                                    if travel_response is not None:
-                                                        route = "travel_agent"
-                                                        response = AIMessage(content=travel_response, additional_kwargs={"agent": "Travel"})
-                                                        st.caption("Routed to Travel")
-                                                        st.markdown(travel_response)
+                                                    finance_response = handle_finance_expense_request(session, prompt)
+                                                    if finance_response is not None:
+                                                        route = "finance_agent"
+                                                        response = AIMessage(content=finance_response, additional_kwargs={"agent": "Finance"})
+                                                        st.caption("Routed to Finance")
+                                                        st.markdown(finance_response)
                                                         session["messages"].append(response)
                                                         record_event("chat_request_completed", session_id=session["id"], route=route)
                                                     else:
-                                                        route = supervisor_node({"messages": session["messages"]})
-                                                        result = workflow.invoke({"messages": session["messages"]})
-                                                        responses = [message for message in result["messages"] if isinstance(message, AIMessage)]
-                                                        if not responses:
-                                                            record_event("chat_request_failed", reason="no_response")
-                                                            st.warning("No response was generated. Please try again.")
-                                                        else:
-                                                            response = responses[-1]
-                                                            response.additional_kwargs["agent"] = AGENT_LABELS.get(route, "Enterprise AI")
-                                                            st.caption(f"Routed to {response.additional_kwargs['agent']}")
-                                                            st.markdown(str(response.content))
+                                                        budget_response = handle_estimate_budget(session, prompt)
+                                                        if budget_response is not None:
+                                                            route = "travel_agent"
+                                                            response = AIMessage(content=budget_response, additional_kwargs={"agent": "Travel"})
+                                                            st.caption("Routed to Travel")
+                                                            st.markdown(budget_response)
                                                             session["messages"].append(response)
                                                             record_event("chat_request_completed", session_id=session["id"], route=route)
+                                                        else:
+                                                            plan_response = handle_generate_travel_plan(session, prompt)
+                                                            if plan_response is not None:
+                                                                route = "travel_agent"
+                                                                response = AIMessage(content=plan_response, additional_kwargs={"agent": "Travel"})
+                                                                st.caption("Routed to Travel")
+                                                                st.markdown(plan_response)
+                                                                session["messages"].append(response)
+                                                                record_event("chat_request_completed", session_id=session["id"], route=route)
+                                                            else:
+                                                                travel_response = handle_travel_request(session, prompt)
+                                                                if travel_response is not None:
+                                                                    route = "travel_agent"
+                                                                    response = AIMessage(content=travel_response, additional_kwargs={"agent": "Travel"})
+                                                                    st.caption("Routed to Travel")
+                                                                    st.markdown(travel_response)
+                                                                    session["messages"].append(response)
+                                                                    record_event("chat_request_completed", session_id=session["id"], route=route)
+                                                                else:
+                                                                    general_response = handle_general_chat(prompt)
+                                                                    if general_response is not None:
+                                                                        route = "general_agent"
+                                                                        response = AIMessage(content=general_response, additional_kwargs={"agent": "Enterprise AI"})
+                                                                        st.caption("Routed to Enterprise AI")
+                                                                        st.markdown(general_response)
+                                                                        session["messages"].append(response)
+                                                                        record_event("chat_request_completed", session_id=session["id"], route=route)
+                                                                    else:
+                                                                        route = supervisor_node({"messages": session["messages"]})
+                                                                        result = workflow.invoke({"messages": session["messages"]})
+                                                                        responses = [message for message in result["messages"] if isinstance(message, AIMessage)]
+                                                                        if not responses:
+                                                                            record_event("chat_request_failed", reason="no_response")
+                                                                            st.warning("No response was generated. Please try again.")
+                                                                        else:
+                                                                            response = responses[-1]
+                                                                            response.additional_kwargs["agent"] = AGENT_LABELS.get(route, "Enterprise AI")
+                                                                            st.caption(f"Routed to {response.additional_kwargs['agent']}")
+                                                                            st.markdown(str(response.content))
+                                                                            session["messages"].append(response)
+                                                                            record_event("chat_request_completed", session_id=session["id"], route=route)
                 except Exception as error:
                     record_event("chat_request_failed", session_id=session["id"], error=type(error).__name__)
                     st.error("I couldn't complete that request. Check that Ollama is running, then try again.")
@@ -1560,7 +2179,13 @@ st.caption("Ask naturally. Your message is automatically routed to the appropria
 
 messages = active_session()["messages"]
 if not messages:
-    st.info("Try asking about IT support, leave, expenses, travel, or workplace policies.")
+    user_role = st.session_state.get("user_role", "general")
+    if user_role == "hr":
+        st.info("Welcome, HR! You can approve leave/expense requests, check balances, or manage employee records.")
+    elif user_role == "employee":
+        st.info("Welcome! You can apply for leave, submit expenses, raise IT tickets, or check your balances.")
+    else:
+        st.info("Try asking about IT support, leave, expenses, travel, or workplace policies.")
 render_messages(messages)
 
 if prompt := st.chat_input("Message Enterprise AI"):

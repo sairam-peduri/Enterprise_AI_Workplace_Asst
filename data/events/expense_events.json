@@ -1,0 +1,28 @@
+[
+  {
+    "event_id": "EXP001",
+    "employee_id": "EMP007",
+    "employee_name": "Sanjay Joshi",
+    "department": "IT",
+    "event_type": "expense_blocked",
+    "severity": "Medium",
+    "source_system": "Finance_System",
+    "title": "Expense Claim Missing Invoice",
+    "description": "Expense claim EXP1018 for ₹25,000 requires uploaded invoice.",
+    "due_date": "2026-08-05",
+    "metadata": {"expense_id": "EXP1018", "amount": 25000, "category": "Travel", "missing_document": "invoice"}
+  },
+  {
+    "event_id": "EXP002",
+    "employee_id": "EMP008",
+    "employee_name": "Kavita Reddy",
+    "department": "Finance",
+    "event_type": "expense_blocked",
+    "severity": "Low",
+    "source_system": "Finance_System",
+    "title": "Expense Claim Requires Receipt",
+    "description": "Expense claim EXP1022 for ₹8,500 requires receipt upload.",
+    "due_date": "2026-08-10",
+    "metadata": {"expense_id": "EXP1022", "amount": 8500, "category": "Office Supplies", "missing_document": "receipt"}
+  }
+]

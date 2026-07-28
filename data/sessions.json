@@ -1,184 +1,8 @@
 {
-  "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9": {
-    "id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-    "title": "hi request for business travel",
-    "created_at": "2026-07-28T10:58:47",
-    "messages": [
-      {
-        "type": "human",
-        "content": "hi request for business travel"
-      },
-      {
-        "type": "ai",
-        "content": "I can help you with travel requests. Please provide your **full name** as recorded in the system.",
-        "additional_kwargs": {
-          "agent": "Travel"
-        }
-      },
-      {
-        "type": "human",
-        "content": "Rajesh Patel"
-      },
-      {
-        "type": "ai",
-        "content": "Employee found: Rajesh Patel (EMP002). Please provide the source, destination, travel dates, and purpose.",
-        "additional_kwargs": {
-          "agent": "Travel"
-        }
-      },
-      {
-        "type": "human",
-        "content": "hyderabad,delhi,25-05-2026,30-05-2026,cjp protest"
-      },
-      {
-        "type": "ai",
-        "content": "Employee not found. Please provide your **full name** exactly as recorded in the system.",
-        "additional_kwargs": {
-          "agent": "Travel"
-        }
-      },
-      {
-        "type": "human",
-        "content": "Rajesh Patel"
-      },
-      {
-        "type": "ai",
-        "content": "Employee found: Rajesh Patel (EMP002). Please provide the source, destination, travel dates, and purpose.",
-        "additional_kwargs": {
-          "agent": "Travel"
-        }
-      },
-      {
-        "type": "human",
-        "content": "source:hyderabad,destination:delhi,start_date:25-05-2026,end_date:30-05-2026,purpse:cjp protest"
-      },
-      {
-        "type": "ai",
-        "content": "Employee not found. Please provide your **full name** exactly as recorded in the system.",
-        "additional_kwargs": {
-          "agent": "Travel"
-        }
-      }
-    ],
-    "activity": [
-      {
-        "timestamp": "2026-07-28T10:59:00",
-        "event": "chat_request_started",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "message_count": 1
-      },
-      {
-        "timestamp": "2026-07-28T10:59:04",
-        "event": "travel_employee_not_found"
-      },
-      {
-        "timestamp": "2026-07-28T10:59:04",
-        "event": "chat_request_completed",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "route": "travel_agent"
-      },
-      {
-        "timestamp": "2026-07-28T10:59:10",
-        "event": "chat_request_started",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "message_count": 3
-      },
-      {
-        "timestamp": "2026-07-28T10:59:12",
-        "event": "travel_employee_found_by_name",
-        "employee_id": "EMP002"
-      },
-      {
-        "timestamp": "2026-07-28T10:59:12",
-        "event": "chat_request_completed",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "route": "travel_agent"
-      },
-      {
-        "timestamp": "2026-07-28T10:59:53",
-        "event": "chat_request_started",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "message_count": 5
-      },
-      {
-        "timestamp": "2026-07-28T10:59:57",
-        "event": "travel_employee_not_found"
-      },
-      {
-        "timestamp": "2026-07-28T10:59:57",
-        "event": "chat_request_completed",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "route": "travel_agent"
-      },
-      {
-        "timestamp": "2026-07-28T11:00:06",
-        "event": "chat_request_started",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "message_count": 7
-      },
-      {
-        "timestamp": "2026-07-28T11:00:08",
-        "event": "travel_employee_found_by_name",
-        "employee_id": "EMP002"
-      },
-      {
-        "timestamp": "2026-07-28T11:00:08",
-        "event": "chat_request_completed",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "route": "travel_agent"
-      },
-      {
-        "timestamp": "2026-07-28T11:00:48",
-        "event": "chat_request_started",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "message_count": 9
-      },
-      {
-        "timestamp": "2026-07-28T11:00:52",
-        "event": "travel_employee_not_found"
-      },
-      {
-        "timestamp": "2026-07-28T11:00:52",
-        "event": "chat_request_completed",
-        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
-        "route": "travel_agent"
-      }
-    ],
-    "pending_leave": null,
-    "pending_leave_balance": null,
-    "pending_it_ticket": null,
-    "pending_it_action": null,
-    "pending_expense": null,
-    "pending_travel": null,
-    "pending_reimbursement": null,
-    "pending_budget": null,
-    "pending_travel_plan": null
-  },
-  "ab3457ae-89bd-4c6f-92ab-cb5b31ce3cf5": {
-    "id": "ab3457ae-89bd-4c6f-92ab-cb5b31ce3cf5",
-    "title": "check ticket status",
-    "created_at": "2026-07-28T12:48:18",
-    "messages": [
-      {
-        "type": "human",
-        "content": "check ticket status"
-      }
-    ],
-    "activity": [],
-    "pending_leave": null,
-    "pending_leave_balance": null,
-    "pending_it_ticket": null,
-    "pending_it_action": null,
-    "pending_expense": null,
-    "pending_travel": null,
-    "pending_reimbursement": null,
-    "pending_budget": null,
-    "pending_travel_plan": null
-  },
-  "d65354ce-4925-4730-9ea8-2767bb964e2a": {
-    "id": "d65354ce-4925-4730-9ea8-2767bb964e2a",
+  "f48b044a-8d69-42b8-8b73-49d784bd9566": {
+    "id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
     "title": "New conversation",
-    "created_at": "2026-07-28T13:50:27",
+    "created_at": "2026-07-28T15:21:55",
     "messages": [],
     "activity": [],
     "pending_leave": null,
@@ -189,6 +13,217 @@
     "pending_travel": null,
     "pending_reimbursement": null,
     "pending_budget": null,
-    "pending_travel_plan": null
+    "pending_travel_plan": null,
+    "pending_proactive_rec": null,
+    "proactive_recommendations": [
+      {
+        "recommendation_id": "da8285c8",
+        "employee_id": "EMP003",
+        "employee_name": "Vikram Singh",
+        "title": "Complete Security Certification Expires Today Before Deadline",
+        "reason": "Your mandatory training 'Security Certification Expires Today' expires on 2026-07-28. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.8007500000000001,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN003",
+            "employee_id": "EMP003",
+            "employee_name": "Vikram Singh",
+            "department": "IT",
+            "event_type": "training_expiry",
+            "severity": "Critical",
+            "source_system": "LMS",
+            "title": "Security Certification Expires Today",
+            "description": "AWS Security Specialty certification expires today.",
+            "due_date": "2026-07-28",
+            "metadata": {
+              "certification": "AWS Security Specialty",
+              "renewal_url": "https://aws.amazon.com/certification"
+            },
+            "timestamp": "2026-07-28T15:21:55.460882"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-28T15:21:55.476329"
+      },
+      {
+        "recommendation_id": "f84e5dd8",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "title": "Complete Cybersecurity Awareness 2026 Before Deadline",
+        "reason": "Your mandatory training 'Cybersecurity Awareness 2026' expires on 2026-07-29. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.72925,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN001",
+            "employee_id": "EMP001",
+            "employee_name": "Priya Sharma",
+            "department": "HR",
+            "event_type": "training_expiry",
+            "severity": "High",
+            "source_system": "LMS",
+            "title": "Cybersecurity Training Expires Tomorrow",
+            "description": "Annual cybersecurity awareness training due to expire on 2026-07-29.",
+            "due_date": "2026-07-29",
+            "metadata": {
+              "course_name": "Cybersecurity Awareness 2026",
+              "completion_required_by": "2026-07-29"
+            },
+            "timestamp": "2026-07-28T15:21:55.460882"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-28T15:21:55.476329"
+      },
+      {
+        "recommendation_id": "3523986c",
+        "employee_id": "EMP005",
+        "employee_name": "Manoj Kumar",
+        "title": "Complete Sales Compliance 2026 Before Deadline",
+        "reason": "Your mandatory training 'Sales Compliance 2026' expires on 2026-07-31. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.72575,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN004",
+            "employee_id": "EMP005",
+            "employee_name": "Manoj Kumar",
+            "department": "Sales",
+            "event_type": "training_expiry",
+            "severity": "High",
+            "source_system": "LMS",
+            "title": "Sales Compliance Training Due in 3 Days",
+            "description": "Mandatory sales compliance training expires on 2026-07-31.",
+            "due_date": "2026-07-31",
+            "metadata": {
+              "course_name": "Sales Compliance 2026",
+              "completion_required_by": "2026-07-31"
+            },
+            "timestamp": "2026-07-28T15:21:55.460882"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-28T15:21:55.476329"
+      },
+      {
+        "recommendation_id": "e45e6988",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "title": "Follow Up on Leave Request Pending for 7 Days",
+        "reason": "Your Leave Request Pending for 7 Days has been pending approval for 7 working days.",
+        "business_impact": "Delays may affect travel plans or reimbursement timelines.",
+        "suggested_action": "Send a reminder to your manager or escalate if urgent.",
+        "priority": "High",
+        "confidence": 0.708,
+        "approval_required": true,
+        "approval_type": "send_reminder",
+        "events": [
+          {
+            "event_id": "APR001",
+            "employee_id": "EMP001",
+            "employee_name": "Priya Sharma",
+            "department": "HR",
+            "event_type": "pending_approval",
+            "severity": "Medium",
+            "source_system": "Workflow_System",
+            "title": "Leave Request Pending for 7 Days",
+            "description": "Leave request LV001 pending manager approval for 7 working days.",
+            "due_date": "2026-07-28",
+            "metadata": {
+              "request_id": "LV001",
+              "leave_type": "Annual Leave",
+              "days": 5,
+              "days_pending": 7
+            },
+            "timestamp": "2026-07-28T15:21:55.472938"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-28T15:21:55.475977"
+      },
+      {
+        "recommendation_id": "911531e4",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Complete Data Privacy Compliance Before Deadline",
+        "reason": "Your mandatory training 'Data Privacy Compliance' expires on 2026-08-04. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.654,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN002",
+            "employee_id": "EMP002",
+            "employee_name": "Rajesh Patel",
+            "department": "Finance",
+            "event_type": "training_expiry",
+            "severity": "Medium",
+            "source_system": "LMS",
+            "title": "Data Privacy Training Due in 7 Days",
+            "description": "Mandatory data privacy training expires on 2026-08-04.",
+            "due_date": "2026-08-04",
+            "metadata": {
+              "course_name": "Data Privacy Compliance",
+              "completion_required_by": "2026-08-04"
+            },
+            "timestamp": "2026-07-28T15:21:55.460882"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-28T15:21:55.476329"
+      }
+    ],
+    "pending_employee_leave": null,
+    "pending_employee_expense": null,
+    "pending_employee_ticket": null,
+    "pending_approvals": []
+  },
+  "533ba835-a549-49fe-bb86-8d745d07c9da": {
+    "id": "533ba835-a549-49fe-bb86-8d745d07c9da",
+    "title": "New conversation",
+    "created_at": "2026-07-28T21:51:45",
+    "messages": [],
+    "activity": [],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null,
+    "pending_proactive_rec": null,
+    "proactive_recommendations": [],
+    "pending_approvals": [],
+    "pending_employee_leave": null,
+    "pending_employee_expense": null,
+    "pending_employee_ticket": null
   }
 }

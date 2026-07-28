@@ -1,0 +1,28 @@
+[
+  {
+    "event_id": "PSP001",
+    "employee_id": "EMP004",
+    "employee_name": "Ananya Gupta",
+    "department": "IT",
+    "event_type": "passport_expiry",
+    "severity": "Critical",
+    "source_system": "HR_System",
+    "title": "Passport Expires in 45 Days",
+    "description": "Passport expires on 2026-09-12. International travel requires 6 months validity.",
+    "due_date": "2026-09-12",
+    "metadata": {"passport_number": "P1234567", "nationality": "Indian", "travel_planned": true}
+  },
+  {
+    "event_id": "PSP002",
+    "employee_id": "EMP005",
+    "employee_name": "Manoj Kumar",
+    "department": "Sales",
+    "event_type": "passport_expiry",
+    "severity": "High",
+    "source_system": "HR_System",
+    "title": "Passport Expires in 90 Days",
+    "description": "Passport expires on 2026-10-26. Upcoming client visits may require valid passport.",
+    "due_date": "2026-10-26",
+    "metadata": {"passport_number": "P7654321", "nationality": "Indian", "travel_planned": false}
+  }
+]

@@ -125,7 +125,7 @@
     "days": 5,
     "leave_type": "Annual Leave",
     "reason": "cold",
-    "status": "Pending"
+    "status": "Approved"
   },
   {
     "employee_id": "EMP001",
@@ -149,6 +149,14 @@
     "days": 3,
     "leave_type": "Annual Leave",
     "reason": "cold",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP002",
+    "employee_name": "Rajesh Patel",
+    "days": 5,
+    "leave_type": "Sick Leave",
+    "reason": "fever",
     "status": "Pending"
   }
 ]
