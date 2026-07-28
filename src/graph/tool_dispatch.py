@@ -10,7 +10,6 @@ from langchain_core.messages import AIMessage
 
 from src.tools.finance_tools import check_reimbursement_status
 from src.tools.hr_tools import check_leave_balance, holiday_calendar
-from src.tools.it_tools import reset_password, unlock_account
 from src.tools.travel_tools import estimate_budget
 from src.utils.logging_config import record_event
 
@@ -30,15 +29,8 @@ def dispatch_known_request(route: str, text: str) -> AIMessage | None:
     lowered = text.lower()
     employee_id = _employee_id(text)
 
-    if route == "it_agent" and "reset" in lowered and "password" in lowered and not employee_id:
-        record_event("tool_requested", agent=route, tool="reset_password", status="missing_employee_id")
-        return AIMessage(content="Please provide your employee ID (for example, EMP001) so I can submit the password reset request.")
-    if route == "it_agent" and employee_id and "reset" in lowered and "password" in lowered:
-        record_event("tool_requested", agent=route, tool="reset_password")
-        return AIMessage(content=reset_password.invoke({"employee_id": employee_id}))
-    if route == "it_agent" and employee_id and "unlock" in lowered and "account" in lowered:
-        record_event("tool_requested", agent=route, tool="unlock_account")
-        return AIMessage(content=unlock_account.invoke({"employee_id": employee_id}))
+    # All IT state-changing actions (password reset, unlock, tickets) go through
+    # the human-in-loop state machine in app.py. Nothing dispatched here for IT.
 
     if route == "hr_agent" and employee_id and "leave" in lowered and any(
         word in lowered for word in ("balance", "remaining", "how many")

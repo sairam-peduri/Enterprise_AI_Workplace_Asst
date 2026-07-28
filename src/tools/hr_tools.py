@@ -51,8 +51,15 @@ def find_employee_by_name(employee_name: str) -> dict | None:
 
 
 def find_employee_in_text(text: str) -> dict | None:
-    """Resolve a known full employee name mentioned in a chat message."""
+    """Resolve a known full employee name or employee ID mentioned in a chat message."""
     normalized_text = " ".join(text.split()).casefold()
+    id_match = re.search(r"\b(EMP\d+)\b", text, flags=re.IGNORECASE)
+    if id_match:
+        emp_id = id_match.group(1).upper()
+        return next(
+            (emp for emp in _load_employees() if str(emp.get("employee_id", "")).upper() == emp_id),
+            None,
+        )
     return next(
         (
             employee
@@ -187,3 +194,5 @@ def holiday_calendar() -> str:
 
 
 HR_TOOLS = [apply_leave, check_leave_balance, holiday_calendar]
+
+HR_READ_ONLY_TOOLS = [check_leave_balance, holiday_calendar]

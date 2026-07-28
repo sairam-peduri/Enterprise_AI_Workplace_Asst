@@ -1,44 +1,45 @@
-"""
-Utility functions for reading and writing JSON files/
+"""Utility functions for reading and writing JSON files.
 
-These helpers are shared across all modules (HR,IT,Finance,Travel).
-
+Falls back to direct file I/O when the FastAPI data server is unavailable.
 """
 
-import json 
-from pathlib import Path 
-from typing import Any 
+import json
+import os
+from pathlib import Path
+from typing import Any
 
-def load_json(file_path:Path)->Any:
-    """
-    Load JSON data from a file.
-    
-    Args:
-        file_path: Path to the JSON file.
-        
-    Returns:
-        Parsed JSON data.
-    """
+import requests
 
-    if not file_path.exists():
-        return [] 
+API_BASE = os.environ.get("DATA_API_URL", "http://localhost:8000")
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
+
+def _to_relative(file_path: Path) -> str:
+    return str(file_path.relative_to(DATA_DIR)).replace("\\", "/")
+
+
+def load_json(file_path: Path) -> Any:
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Invalid JSON in {file_path.name}.") from exc
+        resp = requests.get(f"{API_BASE}/api/data/{_to_relative(file_path)}", timeout=3)
+        if resp.status_code == 404:
+            return []
+        resp.raise_for_status()
+        return resp.json()
+    except (requests.ConnectionError, requests.Timeout):
+        if file_path.exists():
+            return json.loads(file_path.read_text(encoding="utf-8"))
+        return []
 
-def save_json(file_path:Path,data:Any)->None:
-    """
-    Save data to a JSON file.
-    
-    Args:
-        file_path:Path to the JSON file.
-        data:Data to save. 
-    """
 
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(file_path,"w",encoding='utf-8') as file:
-        json.dump(data,file,indent=4)
-
+def save_json(file_path: Path, data: Any) -> None:
+    try:
+        resp = requests.put(
+            f"{API_BASE}/api/data/{_to_relative(file_path)}",
+            json={"data": data},
+            timeout=3,
+        )
+        resp.raise_for_status()
+    except (requests.ConnectionError, requests.Timeout):
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")

@@ -3,7 +3,7 @@ from langchain.agents import create_agent
 from langchain_ollama import ChatOllama
 
 from src.prompts.hr_prompt import HR_AGENT_PROMPT
-from src.tools.hr_tools import HR_TOOLS
+from src.tools.hr_tools import HR_READ_ONLY_TOOLS
 
 llm = ChatOllama(
     model="llama3.2",
@@ -12,6 +12,6 @@ llm = ChatOllama(
 
 hr_agent = create_agent(
     model=llm,
-    tools=HR_TOOLS,
+    tools=HR_READ_ONLY_TOOLS,
     system_prompt=HR_AGENT_PROMPT,
 )

@@ -1,31 +1,82 @@
-import json
+import re
 from datetime import date
+from difflib import SequenceMatcher
 from pathlib import Path
 
+from langchain_core.tools import StructuredTool
 
-DATA_FILE = (
-    Path(__file__).resolve().parents[2]
-    / "data"
-    / "finance"
-    / "expenses.json"
-)
+from src.utils.file_handler import load_json, save_json
+from src.utils.paths import FINANCE_DATA_DIR, IT_DATA_DIR
+
+DATA_FILE: Path = FINANCE_DATA_DIR / "expenses.json"
+FINANCE_EMPLOYEE_FILE: Path = IT_DATA_DIR / "employees.json"
+
+
+def _load_employees():
+    return load_json(FINANCE_EMPLOYEE_FILE)
 
 
 def load_expenses():
-    """Load all expense records."""
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
+    return load_json(DATA_FILE)
 
 
 def save_expenses(expenses):
-    """Save expense records."""
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+    save_json(DATA_FILE, expenses)
 
-    with open(DATA_FILE, "w", encoding="utf-8") as file:
-        json.dump(expenses, file, indent=2)
+
+def find_employee_by_name(employee_name: str) -> dict | None:
+    """Find one employee by full name, ignoring case and extra spaces."""
+    normalized_name = " ".join(employee_name.split()).casefold()
+    if not normalized_name:
+        return None
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if " ".join(str(employee.get("name", "")).split()).casefold() == normalized_name
+        ),
+        None,
+    )
+
+
+def find_employee_in_text(text: str) -> dict | None:
+    """Resolve a known full employee name or employee ID mentioned in a chat message."""
+    normalized_text = " ".join(text.split()).casefold()
+    id_match = re.search(r"\b(EMP\d+)\b", text, flags=re.IGNORECASE)
+    if id_match:
+        emp_id = id_match.group(1).upper()
+        return next(
+            (emp for emp in _load_employees() if emp.get("employee_id", "").upper() == emp_id),
+            None,
+        )
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if employee.get("name")
+            and " ".join(str(employee["name"]).split()).casefold() in normalized_text
+        ),
+        None,
+    )
+
+
+def suggest_employee_in_text(text: str) -> dict | None:
+    """Suggest a close full-name match without treating it as an exact identity."""
+    words = re.findall(r"[a-z]+", text.casefold())
+    best_match: dict | None = None
+    best_score = 0.0
+    for employee in _load_employees():
+        name_words = re.findall(r"[a-z]+", str(employee.get("name", "")).casefold())
+        if not name_words:
+            continue
+        window_size = len(name_words)
+        for index in range(len(words) - window_size + 1):
+            candidate = " ".join(words[index : index + window_size])
+            score = SequenceMatcher(None, candidate, " ".join(name_words)).ratio()
+            if score > best_score:
+                best_match = employee
+                best_score = score
+    return best_match if best_score >= 0.84 else None
 
 
 def check_reimbursement_status(expense_id: str, employee_id: str):
@@ -85,8 +136,15 @@ def submit_expense(
     description: str,
     expense_date: str,
     receipt_available: bool,
+    confirmed: bool = False,
 ):
-    """Submit a new expense claim."""
+    """Submit a new expense claim. Only submits when confirmed is True."""
+
+    if not confirmed:
+        return {
+            "success": False,
+            "message": "Confirmation required. Show the expense summary and ask the employee to reply yes before submitting.",
+        }
 
     if not employee_id.strip():
         return {"success": False, "message": "Employee ID is required."}
@@ -137,8 +195,6 @@ def submit_expense(
         "message": "Expense claim submitted successfully.",
         "expense": new_expense,
     }
-
-from langchain_core.tools import StructuredTool
 
 
 check_reimbursement_tool = StructuredTool.from_function(

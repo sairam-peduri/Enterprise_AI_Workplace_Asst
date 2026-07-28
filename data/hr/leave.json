@@ -1,98 +1,154 @@
 [
-    {
-        "employee_id": "EMP001",
-        "employee_name": "Priya Sharma",
-        "days": 2,
-        "leave_type": "Annual",
-        "reason": "Family wedding in Mumbai",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP002",
-        "employee_name": "Rajesh Patel",
-        "days": 1,
-        "leave_type": "Sick",
-        "reason": "Doctor appointment",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP003",
-        "employee_name": "Vikram Singh",
-        "days": 3,
-        "leave_type": "Annual",
-        "reason": "Trip to Goa with family",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP004",
-        "employee_name": "Ananya Gupta",
-        "days": 1,
-        "leave_type": "Personal",
-        "reason": "House shifting",
-        "status": "Pending"
-    },
-    {
-        "employee_id": "EMP005",
-        "employee_name": "Manoj Kumar",
-        "days": 2,
-        "leave_type": "Annual",
-        "reason": "Parent's anniversary celebration",
-        "status": "Pending"
-    },
-    {
-        "employee_id": "EMP006",
-        "employee_name": "Deepa Nair",
-        "days": 5,
-        "leave_type": "Annual",
-        "reason": "Kerala family vacation",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP007",
-        "employee_name": "Sanjay Joshi",
-        "days": 1,
-        "leave_type": "Sick",
-        "reason": "Food poisoning",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP008",
-        "employee_name": "Kavita Reddy",
-        "days": 2,
-        "leave_type": "Personal",
-        "reason": "Daughter's school event",
-        "status": "Pending"
-    },
-    {
-        "employee_id": "EMP009",
-        "employee_name": "Arjun Menon",
-        "days": 3,
-        "leave_type": "Annual",
-        "reason": "Weekend trip to Coorg",
-        "status": "Rejected"
-    },
-    {
-        "employee_id": "EMP010",
-        "employee_name": "Sneha Verma",
-        "days": 1,
-        "leave_type": "Sick",
-        "reason": "Migraine",
-        "status": "Pending"
-    },
-    {
-        "employee_id": "EMP001",
-        "employee_name": "Priya Sharma",
-        "days": 4,
-        "leave_type": "Annual",
-        "reason": "Diwali vacation",
-        "status": "Approved"
-    },
-    {
-        "employee_id": "EMP005",
-        "employee_name": "Manoj Kumar",
-        "days": 2,
-        "leave_type": "Sick",
-        "reason": "Medical leave for surgery recovery",
-        "status": "Approved"
-    }
+  {
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "days": 2,
+    "leave_type": "Annual",
+    "reason": "Family wedding in Mumbai",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP002",
+    "employee_name": "Rajesh Patel",
+    "days": 1,
+    "leave_type": "Sick",
+    "reason": "Doctor appointment",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP003",
+    "employee_name": "Vikram Singh",
+    "days": 3,
+    "leave_type": "Annual",
+    "reason": "Trip to Goa with family",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP004",
+    "employee_name": "Ananya Gupta",
+    "days": 1,
+    "leave_type": "Personal",
+    "reason": "House shifting",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP005",
+    "employee_name": "Manoj Kumar",
+    "days": 2,
+    "leave_type": "Annual",
+    "reason": "Parent's anniversary celebration",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP006",
+    "employee_name": "Deepa Nair",
+    "days": 5,
+    "leave_type": "Annual",
+    "reason": "Kerala family vacation",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP007",
+    "employee_name": "Sanjay Joshi",
+    "days": 1,
+    "leave_type": "Sick",
+    "reason": "Food poisoning",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP008",
+    "employee_name": "Kavita Reddy",
+    "days": 2,
+    "leave_type": "Personal",
+    "reason": "Daughter's school event",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP009",
+    "employee_name": "Arjun Menon",
+    "days": 3,
+    "leave_type": "Annual",
+    "reason": "Weekend trip to Coorg",
+    "status": "Rejected"
+  },
+  {
+    "employee_id": "EMP010",
+    "employee_name": "Sneha Verma",
+    "days": 1,
+    "leave_type": "Sick",
+    "reason": "Migraine",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "days": 4,
+    "leave_type": "Annual",
+    "reason": "Diwali vacation",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP005",
+    "employee_name": "Manoj Kumar",
+    "days": 2,
+    "leave_type": "Sick",
+    "reason": "Medical leave for surgery recovery",
+    "status": "Approved"
+  },
+  {
+    "employee_id": "EMP010",
+    "employee_name": "Sneha Verma",
+    "days": 5,
+    "leave_type": "Sick Leave",
+    "reason": "fever",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP009",
+    "employee_name": "Arjun Menon",
+    "days": 3,
+    "leave_type": "Annual Leave",
+    "reason": "cold",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP010",
+    "employee_name": "Sneha Verma",
+    "days": 5,
+    "leave_type": "Annual Leave",
+    "reason": "accident",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "days": 5,
+    "leave_type": "Annual Leave",
+    "reason": "cold",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "days": 3,
+    "leave_type": "Annual Leave",
+    "reason": "health issue",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP002",
+    "employee_name": "Rajesh Patel",
+    "days": 2,
+    "leave_type": "Annual Leave",
+    "reason": "accident",
+    "status": "Pending"
+  },
+  {
+    "employee_id": "EMP001",
+    "employee_name": "Priya Sharma",
+    "days": 3,
+    "leave_type": "Annual Leave",
+    "reason": "cold",
+    "status": "Pending"
+  }
 ]

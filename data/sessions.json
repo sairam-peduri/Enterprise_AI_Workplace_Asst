@@ -1,0 +1,194 @@
+{
+  "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9": {
+    "id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+    "title": "hi request for business travel",
+    "created_at": "2026-07-28T10:58:47",
+    "messages": [
+      {
+        "type": "human",
+        "content": "hi request for business travel"
+      },
+      {
+        "type": "ai",
+        "content": "I can help you with travel requests. Please provide your **full name** as recorded in the system.",
+        "additional_kwargs": {
+          "agent": "Travel"
+        }
+      },
+      {
+        "type": "human",
+        "content": "Rajesh Patel"
+      },
+      {
+        "type": "ai",
+        "content": "Employee found: Rajesh Patel (EMP002). Please provide the source, destination, travel dates, and purpose.",
+        "additional_kwargs": {
+          "agent": "Travel"
+        }
+      },
+      {
+        "type": "human",
+        "content": "hyderabad,delhi,25-05-2026,30-05-2026,cjp protest"
+      },
+      {
+        "type": "ai",
+        "content": "Employee not found. Please provide your **full name** exactly as recorded in the system.",
+        "additional_kwargs": {
+          "agent": "Travel"
+        }
+      },
+      {
+        "type": "human",
+        "content": "Rajesh Patel"
+      },
+      {
+        "type": "ai",
+        "content": "Employee found: Rajesh Patel (EMP002). Please provide the source, destination, travel dates, and purpose.",
+        "additional_kwargs": {
+          "agent": "Travel"
+        }
+      },
+      {
+        "type": "human",
+        "content": "source:hyderabad,destination:delhi,start_date:25-05-2026,end_date:30-05-2026,purpse:cjp protest"
+      },
+      {
+        "type": "ai",
+        "content": "Employee not found. Please provide your **full name** exactly as recorded in the system.",
+        "additional_kwargs": {
+          "agent": "Travel"
+        }
+      }
+    ],
+    "activity": [
+      {
+        "timestamp": "2026-07-28T10:59:00",
+        "event": "chat_request_started",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "message_count": 1
+      },
+      {
+        "timestamp": "2026-07-28T10:59:04",
+        "event": "travel_employee_not_found"
+      },
+      {
+        "timestamp": "2026-07-28T10:59:04",
+        "event": "chat_request_completed",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "route": "travel_agent"
+      },
+      {
+        "timestamp": "2026-07-28T10:59:10",
+        "event": "chat_request_started",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "message_count": 3
+      },
+      {
+        "timestamp": "2026-07-28T10:59:12",
+        "event": "travel_employee_found_by_name",
+        "employee_id": "EMP002"
+      },
+      {
+        "timestamp": "2026-07-28T10:59:12",
+        "event": "chat_request_completed",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "route": "travel_agent"
+      },
+      {
+        "timestamp": "2026-07-28T10:59:53",
+        "event": "chat_request_started",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "message_count": 5
+      },
+      {
+        "timestamp": "2026-07-28T10:59:57",
+        "event": "travel_employee_not_found"
+      },
+      {
+        "timestamp": "2026-07-28T10:59:57",
+        "event": "chat_request_completed",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "route": "travel_agent"
+      },
+      {
+        "timestamp": "2026-07-28T11:00:06",
+        "event": "chat_request_started",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "message_count": 7
+      },
+      {
+        "timestamp": "2026-07-28T11:00:08",
+        "event": "travel_employee_found_by_name",
+        "employee_id": "EMP002"
+      },
+      {
+        "timestamp": "2026-07-28T11:00:08",
+        "event": "chat_request_completed",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "route": "travel_agent"
+      },
+      {
+        "timestamp": "2026-07-28T11:00:48",
+        "event": "chat_request_started",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "message_count": 9
+      },
+      {
+        "timestamp": "2026-07-28T11:00:52",
+        "event": "travel_employee_not_found"
+      },
+      {
+        "timestamp": "2026-07-28T11:00:52",
+        "event": "chat_request_completed",
+        "session_id": "4c2e3e3b-2cbc-4dd0-a112-92bd984475d9",
+        "route": "travel_agent"
+      }
+    ],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null
+  },
+  "ab3457ae-89bd-4c6f-92ab-cb5b31ce3cf5": {
+    "id": "ab3457ae-89bd-4c6f-92ab-cb5b31ce3cf5",
+    "title": "check ticket status",
+    "created_at": "2026-07-28T12:48:18",
+    "messages": [
+      {
+        "type": "human",
+        "content": "check ticket status"
+      }
+    ],
+    "activity": [],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null
+  },
+  "d65354ce-4925-4730-9ea8-2767bb964e2a": {
+    "id": "d65354ce-4925-4730-9ea8-2767bb964e2a",
+    "title": "New conversation",
+    "created_at": "2026-07-28T13:50:27",
+    "messages": [],
+    "activity": [],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null
+  }
+}

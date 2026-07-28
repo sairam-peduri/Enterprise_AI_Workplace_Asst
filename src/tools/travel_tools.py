@@ -1,3 +1,5 @@
+import re
+from difflib import SequenceMatcher
 from langchain_core.tools import tool
 from src.utils.file_handler import load_json, save_json
 from src.utils.paths import (
@@ -19,6 +21,61 @@ def _load_employees():
     return load_json(EMPLOYEE_FILE)
 
 
+def find_employee_by_name(employee_name: str) -> dict | None:
+    """Find one employee by full name, ignoring case and extra spaces."""
+    normalized_name = " ".join(employee_name.split()).casefold()
+    if not normalized_name:
+        return None
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if " ".join(str(employee.get("name", "")).split()).casefold() == normalized_name
+        ),
+        None,
+    )
+
+
+def find_employee_in_text(text: str) -> dict | None:
+    """Resolve a known full employee name or employee ID mentioned in a chat message."""
+    normalized_text = " ".join(text.split()).casefold()
+    id_match = re.search(r"\b(EMP\d+)\b", text, flags=re.IGNORECASE)
+    if id_match:
+        emp_id = id_match.group(1).upper()
+        return next(
+            (emp for emp in _load_employees() if str(emp.get("employee_id", "")).upper() == emp_id),
+            None,
+        )
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if employee.get("name")
+            and " ".join(str(employee["name"]).split()).casefold() in normalized_text
+        ),
+        None,
+    )
+
+
+def suggest_employee_in_text(text: str) -> dict | None:
+    """Suggest a close full-name match without treating it as an exact identity."""
+    words = re.findall(r"[a-z]+", text.casefold())
+    best_match: dict | None = None
+    best_score = 0.0
+    for employee in _load_employees():
+        name_words = re.findall(r"[a-z]+", str(employee.get("name", "")).casefold())
+        if not name_words:
+            continue
+        window_size = len(name_words)
+        for index in range(len(words) - window_size + 1):
+            candidate = " ".join(words[index : index + window_size])
+            score = SequenceMatcher(None, candidate, " ".join(name_words)).ratio()
+            if score > best_score:
+                best_match = employee
+                best_score = score
+    return best_match if best_score >= 0.84 else None
+
+
 def _load_travel_requests():
     return load_json(TRAVEL_FILE)
 
@@ -28,8 +85,9 @@ def _save_travel_requests(requests):
 
 
 def _find_employee(employee_id, employees):
+    employee_id = employee_id.strip().upper()
     return next(
-        (emp for emp in employees if emp["employee_id"] == employee_id),
+        (emp for emp in employees if str(emp.get("employee_id", "")).upper() == employee_id),
         None,
     )
 
@@ -65,10 +123,14 @@ def request_business_travel(
     start_date: str,
     end_date: str,
     purpose: str,
+    confirmed: bool = False,
 ) -> str:
     """
-    Submit a business travel request.
+    Submit a business travel request. Only submits when confirmed is True.
     """
+
+    if not confirmed:
+        return "Confirmation required. Show the travel request summary and ask the employee to reply yes before submitting."
 
     employees = _load_employees()
 
@@ -233,10 +295,13 @@ def check_travel_status(request_id: str) -> str:
 
 
 @tool
-def cancel_travel_request(request_id: str) -> str:
+def cancel_travel_request(request_id: str, confirmed: bool = False) -> str:
     """
-    Cancel a pending travel request.
+    Cancel a pending travel request. Only cancels when confirmed is True.
     """
+
+    if not confirmed:
+        return "Confirmation required. Show the cancellation summary and ask the employee to reply yes before cancelling."
 
     requests = _load_travel_requests()
 
@@ -270,4 +335,10 @@ TRAVEL_TOOLS = [
     generate_travel_plan,
     check_travel_status,
     cancel_travel_request,
+]
+
+TRAVEL_READ_ONLY_TOOLS = [
+    estimate_budget,
+    generate_travel_plan,
+    check_travel_status,
 ]

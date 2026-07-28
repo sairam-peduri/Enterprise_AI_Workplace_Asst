@@ -1,3 +1,6 @@
+import re
+from difflib import SequenceMatcher
+
 from langchain_core.tools import tool 
 from src.utils.file_handler import load_json,save_json 
 from src.utils.paths import (EMPLOYEE_FILE,TICKET_FILE,SYSTEM_FILE)
@@ -27,6 +30,58 @@ def _find_employee(employee_id,employees):
         None,
     )
 
+def find_employee_by_name(employee_name: str) -> dict | None:
+    """Find one employee by full name, ignoring case and extra spaces."""
+    normalized_name = " ".join(employee_name.split()).casefold()
+    if not normalized_name:
+        return None
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if " ".join(str(employee.get("name", "")).split()).casefold() == normalized_name
+        ),
+        None,
+    )
+
+def find_employee_in_text(text: str) -> dict | None:
+    """Resolve a known full employee name or employee ID mentioned in a chat message."""
+    normalized_text = " ".join(text.split()).casefold()
+    id_match = re.search(r"\b(EMP\d+)\b", text, flags=re.IGNORECASE)
+    if id_match:
+        emp_id = id_match.group(1).upper()
+        return next(
+            (emp for emp in _load_employees() if emp.get("employee_id", "").upper() == emp_id),
+            None,
+        )
+    return next(
+        (
+            employee
+            for employee in _load_employees()
+            if employee.get("name")
+            and " ".join(str(employee["name"]).split()).casefold() in normalized_text
+        ),
+        None,
+    )
+
+def suggest_employee_in_text(text: str) -> dict | None:
+    """Suggest a close full-name match without treating it as an exact identity."""
+    words = re.findall(r"[a-z]+", text.casefold())
+    best_match: dict | None = None
+    best_score = 0.0
+    for employee in _load_employees():
+        name_words = re.findall(r"[a-z]+", str(employee.get("name", "")).casefold())
+        if not name_words:
+            continue
+        window_size = len(name_words)
+        for index in range(len(words) - window_size + 1):
+            candidate = " ".join(words[index : index + window_size])
+            score = SequenceMatcher(None, candidate, " ".join(name_words)).ratio()
+            if score > best_score:
+                best_match = employee
+                best_score = score
+    return best_match if best_score >= 0.84 else None
+
 
 def _generate_ticket_id(tickets):
     """
@@ -48,9 +103,9 @@ def _generate_ticket_id(tickets):
     return f"IT{next_number:03d}"
 
 @tool 
-def reset_password(employee_id:str)->str:
+def reset_password(employee_id:str, confirmed: bool = False)->str:
     """
-    Reset the password for a specific employee.
+    Reset the password for a specific employee. Only resets when confirmed is True.
 
     Use ONLY when the user explicitly requests a password reset
     and provides a valid employee ID such as EMP001.
@@ -58,6 +113,9 @@ def reset_password(employee_id:str)->str:
     Do NOT use this tool to answer questions about
     how password resets work.
     """
+
+    if not confirmed:
+        return "Confirmation required. Show the password reset summary and ask the employee to reply yes before submitting."
 
     employees=_load_employees()
 
@@ -71,21 +129,25 @@ def reset_password(employee_id:str)->str:
     
     return (
         f"Password reset request has been successfully processed. "
-        f"{employee['name']} ({employee_id})."
+        f"{employee['name']} ({employee_id}). "
         f"A temporary password has been sent to {employee['email']}."
     )
 
 @tool
-def unlock_account(employee_id:str)->str:
+def unlock_account(employee_id:str, confirmed: bool = False)->str:
     """
-    Unlock a locked employee account.
+    Unlock a locked employee account. Only unlocks when confirmed is True.
     
     Args:
         employee_id:Employee ID 
+        confirmed: Whether the user has confirmed the action
         
     Returns:
         Success message.
     """
+
+    if not confirmed:
+        return "Confirmation required. Show the account unlock summary and ask the employee to reply yes before submitting."
 
     employees = _load_employees()
 
@@ -104,10 +166,15 @@ def unlock_account(employee_id:str)->str:
     return f"{employee['name']}'s account has been unlocked."
 
 @tool
-def raise_it_ticket(employee_id: str, issue: str) -> str:
+def raise_it_ticket(employee_id: str, issue: str, confirmed: bool = False) -> str:
     """
     Raise an IT support ticket.
+
+    This tool changes mock IT data only when confirmed is True.
     """
+
+    if not confirmed:
+        return "Confirmation required. Show the ticket summary and ask the employee to reply yes before submitting."
 
     employees = _load_employees()
 
@@ -284,5 +351,10 @@ IT_TOOLS = [
     request_software_installation,
     request_vpn_access,
     report_hardware_issue,
+    check_system_status,
+]
+
+IT_READ_ONLY_TOOLS = [
+    check_ticket_status,
     check_system_status,
 ]

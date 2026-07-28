@@ -45,6 +45,7 @@ IMPORTANT:
 - Never invent missing values.
 - Never use placeholder values such as <EMPLOYEE ID>.
 - Ask the user if required information is missing.
+- Employee names can be used to resolve employee IDs. If a user provides a name (e.g., "Sneha"), resolve it to the employee ID before taking action.
 
 Be concise, helpful, and professional.
 """

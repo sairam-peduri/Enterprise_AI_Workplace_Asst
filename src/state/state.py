@@ -9,3 +9,5 @@ class EnterpriseState(TypedDict):
     """
 
     messages: Annotated[list, add_messages]
+    employee_id: str | None
+    employee_name: str | None
