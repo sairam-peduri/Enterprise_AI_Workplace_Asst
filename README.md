@@ -549,3 +549,24 @@ Possible extensions to the project include:
 Enterprise AI Workplace Assistant demonstrates how a multi-agent AI system can bring different workplace services into one conversational interface.
 
 By combining LangGraph-based agent orchestration, specialized enterprise tools, RAG-based policy retrieval, confirmation workflows, proactive recommendations, and a Streamlit interface, the project provides a foundation for building an intelligent workplace assistant that can both respond to employee requests and proactively surface relevant information.
+
+---
+
+##Output
+<img width="1916" height="888" alt="Screenshot 2026-07-29 132636" src="https://github.com/user-attachments/assets/faf18a58-bfe0-4130-a5c7-0095eea3e17a" />
+
+<img width="1912" height="894" alt="Screenshot 2026-07-29 132737" src="https://github.com/user-attachments/assets/7d2317e3-3b1a-4d0f-a00f-b15a83dc0a91" />
+
+<img width="1912" height="894" alt="Screenshot 2026-07-29 132737" src="https://github.com/user-attachments/assets/5d02b635-d0f9-461a-9fc7-ed28aacb4c79" />
+
+<img width="1884" height="885" alt="Screenshot 2026-07-29 132834" src="https://github.com/user-attachments/assets/62a79618-f9bf-492a-bf3e-c2b5de163d1a" />
+
+---
+
+##Live Link
+
+https://chat.google.com/room/AAQA07Z83fY/28oKabTN8BM/28oKabTN8BM?cls=10
+
+
+
+
