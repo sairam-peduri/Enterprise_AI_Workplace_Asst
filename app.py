@@ -222,7 +222,7 @@ def initialize_sessions() -> None:
         first_session["user_role"] = st.session_state.get("user_role", "general")
         st.session_state.chat_sessions[first_session["id"]] = first_session
         st.session_state.active_session_id = first_session["id"]
-    else:
+    elif "active_session_id" not in st.session_state or st.session_state.active_session_id not in st.session_state.chat_sessions:
         st.session_state.active_session_id = next(iter(st.session_state.chat_sessions))
 
 
@@ -244,6 +244,9 @@ def start_new_session() -> None:
     session["user_role"] = st.session_state.get("user_role", "general")
     st.session_state.chat_sessions[session["id"]] = session
     st.session_state.active_session_id = session["id"]
+    # Update the per-user storage
+    session_key = session.get("user_id") or "guest"
+    st.session_state.all_user_sessions[session_key] = st.session_state.chat_sessions
     _persist_sessions()
 
 
