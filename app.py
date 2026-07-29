@@ -61,6 +61,94 @@ AGENT_LABELS = {
     "knowledge_agent": "Knowledge",
 }
 
+EVENTS_DIR = Path(__file__).resolve().parent / "data" / "events"
+
+
+def _remove_leave_event(employee_id: str, days: int, leave_type: str, reason: str) -> None:
+    """Remove a leave event from leave_events.json after approval/decline."""
+    events_file = EVENTS_DIR / "leave_events.json"
+    if not events_file.exists():
+        return
+    try:
+        events = json.loads(events_file.read_text(encoding="utf-8"))
+        # Find and remove the matching event - be flexible with matching
+        for i, event in enumerate(events):
+            meta = event.get("metadata", {})
+            # Match on employee_id and status=Pending, be flexible on other fields
+            if (event.get("employee_id") == employee_id
+                    and meta.get("status") == "Pending"):
+                # Try to match days and leave_type if available
+                event_days = meta.get("days")
+                event_type = meta.get("leave_type")
+                if event_days is not None and event_days != days:
+                    continue
+                if event_type is not None and event_type != leave_type:
+                    continue
+                events.pop(i)
+                break
+        events_file.write_text(json.dumps(events, indent=2, ensure_ascii=False), encoding="utf-8")
+    except (json.JSONDecodeError, IOError):
+        pass
+
+
+def _remove_expense_event(expense_id: str) -> None:
+    """Remove an expense event from expense_events.json after approval/decline."""
+    events_file = EVENTS_DIR / "expense_events.json"
+    if not events_file.exists():
+        return
+    try:
+        events = json.loads(events_file.read_text(encoding="utf-8"))
+        for i, event in enumerate(events):
+            meta = event.get("metadata", {})
+            if meta.get("expense_id") == expense_id or event.get("event_id") == expense_id:
+                events.pop(i)
+                break
+        events_file.write_text(json.dumps(events, indent=2, ensure_ascii=False), encoding="utf-8")
+    except (json.JSONDecodeError, IOError):
+        pass
+
+
+def _remove_pending_event(title: str, employee_id: str) -> None:
+    """Remove a pending event from the appropriate events file."""
+    # Try to find and remove from leave_events.json
+    events_file = EVENTS_DIR / "leave_events.json"
+    if events_file.exists():
+        try:
+            events = json.loads(events_file.read_text(encoding="utf-8"))
+            for i, event in enumerate(events):
+                if event.get("employee_id") == employee_id and event.get("metadata", {}).get("status") == "Pending":
+                    events.pop(i)
+                    events_file.write_text(json.dumps(events, indent=2, ensure_ascii=False), encoding="utf-8")
+                    return
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    # Try approval_events.json
+    events_file = EVENTS_DIR / "approval_events.json"
+    if events_file.exists():
+        try:
+            events = json.loads(events_file.read_text(encoding="utf-8"))
+            for i, event in enumerate(events):
+                if event.get("employee_id") == employee_id:
+                    events.pop(i)
+                    events_file.write_text(json.dumps(events, indent=2, ensure_ascii=False), encoding="utf-8")
+                    return
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    # Try travel_events.json
+    events_file = EVENTS_DIR / "travel_events.json"
+    if events_file.exists():
+        try:
+            events = json.loads(events_file.read_text(encoding="utf-8"))
+            for i, event in enumerate(events):
+                if event.get("employee_id") == employee_id:
+                    events.pop(i)
+                    events_file.write_text(json.dumps(events, indent=2, ensure_ascii=False), encoding="utf-8")
+                    return
+        except (json.JSONDecodeError, IOError):
+            pass
+
 
 def _new_session() -> dict:
     """Create the in-browser record for one independent conversation."""
@@ -423,6 +511,7 @@ def render_sidebar() -> None:
                         ))
                 session = active_session()
                 session["proactive_recommendations"] = [r.to_dict() for r in recs]
+                _persist_sessions()
                 st.rerun()
 
             session = active_session()
@@ -450,28 +539,58 @@ def render_sidebar() -> None:
                     if rec.approval_required and user_role == "hr":
                         col1, col2 = st.columns(2)
                         if col1.button("Approve", key=f"approve_{rec.recommendation_id}", use_container_width=True):
+                            approved = False
                             if rec.approval_type == "leave_modification":
                                 meta = rec.metadata
-                                auth.approve_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                                approved = auth.approve_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                                if approved:
+                                    _remove_leave_event(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
                             elif rec.approval_type == "expense_approval":
-                                exp_id = meta.get("expense_id", "")
+                                exp_id = rec.metadata.get("expense_id", "")
                                 if exp_id:
-                                    auth.approve_expense(exp_id)
-                            active_session()["proactive_recommendations"] = [
-                                r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
-                            ]
+                                    approved = auth.approve_expense(exp_id)
+                                    if approved:
+                                        _remove_expense_event(exp_id)
+                            elif rec.approval_type == "send_reminder":
+                                # Acknowledge the reminder - mark as processed
+                                approved = True
+                                _remove_pending_event(rec.title, rec.employee_id)
+                            elif rec.approval_type in ("leave_modification", "budget_exception", "asset_replacement", "deployment_escalation"):
+                                # Generic approval for other types
+                                approved = True
+                                _remove_pending_event(rec.title, rec.employee_id)
+                            if approved:
+                                active_session()["proactive_recommendations"] = [
+                                    r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
+                                ]
+                                _persist_sessions()
                             st.rerun()
                         if col2.button("Decline", key=f"dismiss_{rec.recommendation_id}", use_container_width=True):
+                            declined = False
                             if rec.approval_type == "leave_modification":
                                 meta = rec.metadata
-                                auth.decline_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                                declined = auth.decline_leave(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
+                                if declined:
+                                    _remove_leave_event(rec.employee_id, meta.get("days", 0), meta.get("leave_type", ""), meta.get("reason", ""))
                             elif rec.approval_type == "expense_approval":
-                                exp_id = meta.get("expense_id", "")
+                                exp_id = rec.metadata.get("expense_id", "")
                                 if exp_id:
-                                    auth.decline_expense(exp_id)
-                            active_session()["proactive_recommendations"] = [
-                                r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
-                            ]
+                                    declined = auth.decline_expense(exp_id)
+                                    if declined:
+                                        _remove_expense_event(exp_id)
+                            elif rec.approval_type == "send_reminder":
+                                # Dismiss the reminder
+                                declined = True
+                                _remove_pending_event(rec.title, rec.employee_id)
+                            elif rec.approval_type in ("leave_modification", "budget_exception", "asset_replacement", "deployment_escalation"):
+                                # Generic decline for other types
+                                declined = True
+                                _remove_pending_event(rec.title, rec.employee_id)
+                            if declined:
+                                active_session()["proactive_recommendations"] = [
+                                    r for r in saved_recs if r["recommendation_id"] != rec.recommendation_id
+                                ]
+                                _persist_sessions()
                             st.rerun()
             else:
                 st.caption("No proactive recommendations. Click Refresh to check.")

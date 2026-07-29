@@ -10,33 +10,12 @@
     "title": "Leave Request Pending for 7 Days",
     "description": "Ananya Gupta's personal leave request for 1 day has been pending for 7 days without manager approval.",
     "due_date": "2026-07-21",
-    "metadata": {"leave_type": "Personal", "days": 1, "days_pending": 7, "status": "Pending"}
-  },
-  {
-    "event_id": "LVE002",
-    "employee_id": "EMP005",
-    "employee_name": "Manoj Kumar",
-    "department": "Sales",
-    "event_type": "leave_conflict",
-    "severity": "Medium",
-    "source_system": "HRMS",
-    "title": "Leave Request Pending for 5 Days",
-    "description": "Manoj Kumar's annual leave request for 2 days has been pending for 5 days without manager approval.",
-    "due_date": "2026-07-23",
-    "metadata": {"leave_type": "Annual", "days": 2, "days_pending": 5, "status": "Pending"}
-  },
-  {
-    "event_id": "LVE003",
-    "employee_id": "EMP008",
-    "employee_name": "Kavita Reddy",
-    "department": "Finance",
-    "event_type": "leave_conflict",
-    "severity": "Medium",
-    "source_system": "HRMS",
-    "title": "Leave Request Pending for 5 Days",
-    "description": "Kavita Reddy's personal leave request for 2 days has been pending for 5 days without manager approval.",
-    "due_date": "2026-07-23",
-    "metadata": {"leave_type": "Personal", "days": 2, "days_pending": 5, "status": "Pending"}
+    "metadata": {
+      "leave_type": "Personal",
+      "days": 1,
+      "days_pending": 7,
+      "status": "Pending"
+    }
   },
   {
     "event_id": "LVE004",
@@ -49,7 +28,13 @@
     "title": "Multiple Pending Leave Requests",
     "description": "Sneha Verma has 3 pending leave requests totaling 11 days, indicating potential attendance issues.",
     "due_date": "2026-07-25",
-    "metadata": {"leave_type": "Mixed", "days": 11, "days_pending": 7, "status": "Pending", "request_count": 3}
+    "metadata": {
+      "leave_type": "Mixed",
+      "days": 11,
+      "days_pending": 7,
+      "status": "Pending",
+      "request_count": 3
+    }
   },
   {
     "event_id": "LVE005",
@@ -62,6 +47,11 @@
     "title": "High Leave Utilization Warning",
     "description": "Priya Sharma has used 14 days of leave this year, approaching the 20-day annual limit.",
     "due_date": "2026-08-01",
-    "metadata": {"leave_type": "Annual", "days_used": 14, "days_remaining": 6, "status": "Approved"}
+    "metadata": {
+      "leave_type": "Annual",
+      "days_used": 14,
+      "days_remaining": 6,
+      "status": "Approved"
+    }
   }
 ]

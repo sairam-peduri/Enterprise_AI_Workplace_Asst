@@ -1,18 +1,5 @@
 [
   {
-    "event_id": "APR001",
-    "employee_id": "EMP001",
-    "employee_name": "Priya Sharma",
-    "department": "HR",
-    "event_type": "pending_approval",
-    "severity": "Medium",
-    "source_system": "Workflow_System",
-    "title": "Leave Request Pending for 7 Days",
-    "description": "Leave request LV001 pending manager approval for 7 working days.",
-    "due_date": "2026-07-28",
-    "metadata": {"request_id": "LV001", "leave_type": "Annual Leave", "days": 5, "days_pending": 7}
-  },
-  {
     "event_id": "APR002",
     "employee_id": "EMP002",
     "employee_name": "Rajesh Patel",
@@ -23,6 +10,10 @@
     "title": "Expense Report Pending Approval",
     "description": "Expense report EXP1015 pending for 3 working days.",
     "due_date": "2026-07-28",
-    "metadata": {"request_id": "EXP1015", "amount": 45000, "days_pending": 3}
+    "metadata": {
+      "request_id": "EXP1015",
+      "amount": 45000,
+      "days_pending": 3
+    }
   }
 ]
