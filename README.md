@@ -449,7 +449,7 @@ After launching the application, log in using the appropriate credentials based 
 - General Mode provides access to all general EnterpriseAssist AI features without requiring employee authentication.
 - Users can interact with the AI assistant, access enterprise knowledge, and use available modules.
 
-> **Note:** Proactive recommendations are available only after logging in as an employee or HR user, as they require personalized employee context. Default passwords are provided for demonstration purposes only.
+> **Note:** Proactive recommendations for a specific employee are available only after logging in as an employee or HR user, as they require personalized employee context. Default passwords are provided for demonstration purposes only.
 
 ---
 
