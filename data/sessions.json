@@ -14,6 +14,61 @@
         "additional_kwargs": {
           "agent": "Enterprise AI"
         }
+      },
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      },
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      },
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello, Rajesh Patel! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      },
+      {
+        "type": "human",
+        "content": "submit an expense "
+      },
+      {
+        "type": "ai",
+        "content": "I can help you submit an expense claim. Please provide your **full name** as recorded in the system.",
+        "additional_kwargs": {
+          "agent": "Finance"
+        }
+      },
+      {
+        "type": "human",
+        "content": "Rajesh Patel"
+      },
+      {
+        "type": "ai",
+        "content": "Employee found: Rajesh Patel (EMP002). Please provide the expense amount, category, description, date, and whether you have a receipt.",
+        "additional_kwargs": {
+          "agent": "Finance"
+        }
       }
     ],
     "activity": [
@@ -28,13 +83,86 @@
         "event": "chat_request_completed",
         "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
         "route": "general_agent"
+      },
+      {
+        "timestamp": "2026-07-29T10:51:42",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 3
+      },
+      {
+        "timestamp": "2026-07-29T10:51:42",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "general_agent"
+      },
+      {
+        "timestamp": "2026-07-29T10:57:32",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 5
+      },
+      {
+        "timestamp": "2026-07-29T10:57:32",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "general_agent"
+      },
+      {
+        "timestamp": "2026-07-29T10:57:53",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 7
+      },
+      {
+        "timestamp": "2026-07-29T10:57:53",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "general_agent"
+      },
+      {
+        "timestamp": "2026-07-29T10:58:04",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 9
+      },
+      {
+        "timestamp": "2026-07-29T10:58:12",
+        "event": "finance_employee_not_found"
+      },
+      {
+        "timestamp": "2026-07-29T10:58:12",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "finance_agent"
+      },
+      {
+        "timestamp": "2026-07-29T10:58:18",
+        "event": "chat_request_started",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "message_count": 11
+      },
+      {
+        "timestamp": "2026-07-29T10:58:22",
+        "event": "finance_employee_found_by_name",
+        "employee_id": "EMP002"
+      },
+      {
+        "timestamp": "2026-07-29T10:58:22",
+        "event": "chat_request_completed",
+        "session_id": "f48b044a-8d69-42b8-8b73-49d784bd9566",
+        "route": "finance_agent"
       }
     ],
     "pending_leave": null,
     "pending_leave_balance": null,
     "pending_it_ticket": null,
     "pending_it_action": null,
-    "pending_expense": null,
+    "pending_expense": {
+      "stage": "collecting_details",
+      "employee_id": "EMP002",
+      "employee_name": "Rajesh Patel"
+    },
     "pending_travel": null,
     "pending_reimbursement": null,
     "pending_budget": null,
@@ -250,5 +378,556 @@
     "pending_employee_leave": null,
     "pending_employee_expense": null,
     "pending_employee_ticket": null
+  },
+  "90ba83a0-35ab-402f-b1eb-201dd9aabf4c": {
+    "id": "90ba83a0-35ab-402f-b1eb-201dd9aabf4c",
+    "title": "hi",
+    "created_at": "2026-07-29T11:19:40",
+    "user_id": "EMP002",
+    "user_role": "employee",
+    "messages": [
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello, Rajesh Patel! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      }
+    ],
+    "activity": [
+      {
+        "timestamp": "2026-07-29T11:19:46",
+        "event": "chat_request_started",
+        "session_id": "90ba83a0-35ab-402f-b1eb-201dd9aabf4c",
+        "message_count": 1
+      },
+      {
+        "timestamp": "2026-07-29T11:19:46",
+        "event": "chat_request_completed",
+        "session_id": "90ba83a0-35ab-402f-b1eb-201dd9aabf4c",
+        "route": "general_agent"
+      }
+    ],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null,
+    "pending_proactive_rec": null,
+    "proactive_recommendations": [
+      {
+        "recommendation_id": "a17826fb",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Complete Data Privacy Compliance Before Deadline",
+        "reason": "Your mandatory training 'Data Privacy Compliance' expires on 2026-08-04. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.654,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN002",
+            "employee_id": "EMP002",
+            "employee_name": "Rajesh Patel",
+            "department": "Finance",
+            "event_type": "training_expiry",
+            "severity": "Medium",
+            "source_system": "LMS",
+            "title": "Data Privacy Training Due in 7 Days",
+            "description": "Mandatory data privacy training expires on 2026-08-04.",
+            "due_date": "2026-08-04",
+            "metadata": {
+              "course_name": "Data Privacy Compliance",
+              "completion_required_by": "2026-08-04"
+            },
+            "timestamp": "2026-07-29T11:20:54.790011"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.794632",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "2e333fe0",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Plan Dell Latitude 5520 Replacement",
+        "reason": "Your Dell Latitude 5520 warranty expires on 2026-08-04 (6 days). Without warranty, repairs will be at personal cost.",
+        "business_impact": "Hardware failure after warranty expiry may cause productivity loss.",
+        "suggested_action": "Discuss replacement options with IT or request warranty extension.",
+        "priority": "Medium",
+        "confidence": 0.598,
+        "approval_required": true,
+        "approval_type": "asset_replacement",
+        "events": [
+          {
+            "event_id": "WAR001",
+            "employee_id": "EMP002",
+            "employee_name": "Rajesh Patel",
+            "department": "Finance",
+            "event_type": "warranty_expiry",
+            "severity": "Medium",
+            "source_system": "Asset_Management",
+            "title": "Laptop Warranty Expires Next Week",
+            "description": "Dell Latitude 5520 warranty expires on 2026-08-04. Consider replacement planning.",
+            "due_date": "2026-08-04",
+            "metadata": {
+              "asset_id": "AST-2022-045",
+              "device": "Dell Latitude 5520",
+              "purchase_date": "2022-08-04"
+            },
+            "timestamp": "2026-07-29T11:20:54.794632"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.794632",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "MY-LV-EMP002-2",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Your Leave Request: 2 days Annual Leave",
+        "reason": "Status: Pending — accident",
+        "business_impact": "Awaiting HR approval",
+        "suggested_action": "Wait for HR to review your request",
+        "priority": "Low",
+        "confidence": 0.9,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.795569",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "MY-LV-EMP002-5",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Your Leave Request: 5 days Sick Leave",
+        "reason": "Status: Pending — fever",
+        "business_impact": "Awaiting HR approval",
+        "suggested_action": "Wait for HR to review your request",
+        "priority": "Low",
+        "confidence": 0.9,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.795569",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "MY-TKT-IT002",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Your IT Ticket: VPN access not working",
+        "reason": "Status: In Progress",
+        "business_impact": "Ticket in progress",
+        "suggested_action": "Check ticket status",
+        "priority": "Low",
+        "confidence": 0.9,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.796520",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "MY-TKT-IT017",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Your IT Ticket: accident",
+        "reason": "Status: Open",
+        "business_impact": "Ticket in progress",
+        "suggested_action": "Check ticket status",
+        "priority": "Low",
+        "confidence": 0.9,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:54.796520",
+        "metadata": {}
+      }
+    ],
+    "pending_approvals": []
+  },
+  "e5c2a001-6426-4d0e-9699-59faf6733c1c": {
+    "id": "e5c2a001-6426-4d0e-9699-59faf6733c1c",
+    "title": "hi",
+    "created_at": "2026-07-29T11:20:17",
+    "user_id": "EMP001",
+    "user_role": "hr",
+    "messages": [
+      {
+        "type": "human",
+        "content": "hi"
+      },
+      {
+        "type": "ai",
+        "content": "Hello, Priya Sharma! How can I help you today? You can ask about IT support, leave, expenses, travel, or anything else.",
+        "additional_kwargs": {
+          "agent": "Enterprise AI"
+        }
+      }
+    ],
+    "activity": [
+      {
+        "timestamp": "2026-07-29T11:20:37",
+        "event": "chat_request_started",
+        "session_id": "e5c2a001-6426-4d0e-9699-59faf6733c1c",
+        "message_count": 1
+      },
+      {
+        "timestamp": "2026-07-29T11:20:37",
+        "event": "chat_request_completed",
+        "session_id": "e5c2a001-6426-4d0e-9699-59faf6733c1c",
+        "route": "general_agent"
+      }
+    ],
+    "pending_leave": null,
+    "pending_leave_balance": null,
+    "pending_it_ticket": null,
+    "pending_it_action": null,
+    "pending_expense": null,
+    "pending_travel": null,
+    "pending_reimbursement": null,
+    "pending_budget": null,
+    "pending_travel_plan": null,
+    "pending_proactive_rec": null,
+    "proactive_recommendations": [
+      {
+        "recommendation_id": "e56b296c",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "title": "Complete Cybersecurity Awareness 2026 Before Deadline",
+        "reason": "Your mandatory training 'Cybersecurity Awareness 2026' expires on 2026-07-29. Non-compliance may affect your performance review and departmental compliance metrics.",
+        "business_impact": "Failure to complete may result in access restrictions and compliance violations.",
+        "suggested_action": "Complete the training module before the deadline.",
+        "priority": "High",
+        "confidence": 0.7467499999999999,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "TRN001",
+            "employee_id": "EMP001",
+            "employee_name": "Priya Sharma",
+            "department": "HR",
+            "event_type": "training_expiry",
+            "severity": "High",
+            "source_system": "LMS",
+            "title": "Cybersecurity Training Expires Tomorrow",
+            "description": "Annual cybersecurity awareness training due to expire on 2026-07-29.",
+            "due_date": "2026-07-29",
+            "metadata": {
+              "course_name": "Cybersecurity Awareness 2026",
+              "completion_required_by": "2026-07-29"
+            },
+            "timestamp": "2026-07-29T11:20:22.073851"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.083520",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "55a8dff1",
+        "employee_id": "EMP007",
+        "employee_name": "Sanjay Joshi",
+        "title": "Upload Missing Document for EXP1018",
+        "reason": "Your expense claim EXP1018 for ₹25000 is blocked due to a missing invoice.",
+        "business_impact": "Reimbursement will be delayed until the document is uploaded.",
+        "suggested_action": "Upload the required invoice to unblock your expense claim.",
+        "priority": "Medium",
+        "confidence": 0.616375,
+        "approval_required": false,
+        "approval_type": "",
+        "events": [
+          {
+            "event_id": "EXP001",
+            "employee_id": "EMP007",
+            "employee_name": "Sanjay Joshi",
+            "department": "IT",
+            "event_type": "expense_blocked",
+            "severity": "Medium",
+            "source_system": "Finance_System",
+            "title": "Expense Claim Missing Invoice",
+            "description": "Expense claim EXP1018 for ₹25,000 requires uploaded invoice.",
+            "due_date": "2026-08-05",
+            "metadata": {
+              "expense_id": "EXP1018",
+              "amount": 25000,
+              "category": "Travel",
+              "missing_document": "invoice"
+            },
+            "timestamp": "2026-07-29T11:20:22.075858"
+          }
+        ],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.081879",
+        "metadata": {}
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP005-2-1",
+        "employee_id": "EMP005",
+        "employee_name": "Manoj Kumar",
+        "title": "Approve Leave: Manoj Kumar",
+        "reason": "2 days Annual — Parent's anniversary celebration",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 2,
+          "leave_type": "Annual",
+          "reason": "Parent's anniversary celebration"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP008-2-2",
+        "employee_id": "EMP008",
+        "employee_name": "Kavita Reddy",
+        "title": "Approve Leave: Kavita Reddy",
+        "reason": "2 days Personal — Daughter's school event",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 2,
+          "leave_type": "Personal",
+          "reason": "Daughter's school event"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP010-1-3",
+        "employee_id": "EMP010",
+        "employee_name": "Sneha Verma",
+        "title": "Approve Leave: Sneha Verma",
+        "reason": "1 days Sick — Migraine",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 1,
+          "leave_type": "Sick",
+          "reason": "Migraine"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP010-5-4",
+        "employee_id": "EMP010",
+        "employee_name": "Sneha Verma",
+        "title": "Approve Leave: Sneha Verma",
+        "reason": "5 days Sick Leave — fever",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 5,
+          "leave_type": "Sick Leave",
+          "reason": "fever"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP009-3-5",
+        "employee_id": "EMP009",
+        "employee_name": "Arjun Menon",
+        "title": "Approve Leave: Arjun Menon",
+        "reason": "3 days Annual Leave — cold",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54725,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 3,
+          "leave_type": "Annual Leave",
+          "reason": "cold"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP010-5-6",
+        "employee_id": "EMP010",
+        "employee_name": "Sneha Verma",
+        "title": "Approve Leave: Sneha Verma",
+        "reason": "5 days Annual Leave — accident",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 5,
+          "leave_type": "Annual Leave",
+          "reason": "accident"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP001-3-7",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "title": "Approve Leave: Priya Sharma",
+        "reason": "3 days Annual Leave — health issue",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.53675,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 3,
+          "leave_type": "Annual Leave",
+          "reason": "health issue"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP002-2-8",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Approve Leave: Rajesh Patel",
+        "reason": "2 days Annual Leave — accident",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 2,
+          "leave_type": "Annual Leave",
+          "reason": "accident"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP001-3-9",
+        "employee_id": "EMP001",
+        "employee_name": "Priya Sharma",
+        "title": "Approve Leave: Priya Sharma",
+        "reason": "3 days Annual Leave — cold",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.53675,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.085963",
+        "metadata": {
+          "days": 3,
+          "leave_type": "Annual Leave",
+          "reason": "cold"
+        }
+      },
+      {
+        "recommendation_id": "APPROVE-LV-EMP002-5-10",
+        "employee_id": "EMP002",
+        "employee_name": "Rajesh Patel",
+        "title": "Approve Leave: Rajesh Patel",
+        "reason": "5 days Sick Leave — fever",
+        "business_impact": "Employee awaiting leave approval",
+        "suggested_action": "Approve or decline this leave request",
+        "priority": "Medium",
+        "confidence": 0.54025,
+        "approval_required": true,
+        "approval_type": "leave_modification",
+        "events": [],
+        "dismissed": false,
+        "accepted": false,
+        "executed": false,
+        "timestamp": "2026-07-29T11:20:22.086587",
+        "metadata": {
+          "days": 5,
+          "leave_type": "Sick Leave",
+          "reason": "fever"
+        }
+      }
+    ],
+    "pending_approvals": []
   }
 }

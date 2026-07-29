@@ -68,6 +68,8 @@ def _new_session() -> dict:
         "id": str(uuid4()),
         "title": "New conversation",
         "created_at": datetime.now().isoformat(timespec="seconds"),
+        "user_id": None,
+        "user_role": "general",
         "messages": [],
         "activity": [],
         "pending_leave": None,
@@ -87,33 +89,24 @@ def _new_session() -> dict:
 
 def initialize_sessions() -> None:
     """Initialize session-local conversations and select the first one."""
-    if "chat_sessions" not in st.session_state:
+    # Per-user session storage
+    if "all_user_sessions" not in st.session_state:
+        st.session_state.all_user_sessions = {}
+
+    user_id = st.session_state.get("user_id")
+    session_key = user_id or "guest"
+
+    # Load this user's sessions
+    if session_key not in st.session_state.all_user_sessions:
         saved = load_sessions()
-        if saved:
-            for session in saved.values():
-                session["pending_leave"] = None
-                session["pending_leave_balance"] = None
-                session["pending_it_ticket"] = None
-                session["pending_it_action"] = None
-                session["pending_expense"] = None
-                session["pending_travel"] = None
-                session["pending_reimbursement"] = None
-                session["pending_budget"] = None
-                session["pending_travel_plan"] = None
-                session["pending_employee_leave"] = None
-                session["pending_employee_expense"] = None
-                session["pending_employee_ticket"] = None
-                session.setdefault("activity", [])
-                session.setdefault("proactive_recommendations", [])
-                session.setdefault("pending_approvals", [])
-            st.session_state.chat_sessions = saved
-            st.session_state.active_session_id = next(iter(saved))
+        # Filter sessions for this user if logged in
+        if user_id and saved:
+            user_sessions = {k: v for k, v in saved.items() if v.get("user_id") == user_id}
         else:
-            first_session = _new_session()
-            st.session_state.chat_sessions = {first_session["id"]: first_session}
-            st.session_state.active_session_id = first_session["id"]
-    else:
-        for session in st.session_state.chat_sessions.values():
+            user_sessions = saved if saved else {}
+
+        # Ensure all sessions have required fields
+        for session in user_sessions.values():
             session.setdefault("activity", [])
             session.setdefault("pending_leave", None)
             session.setdefault("pending_leave_balance", None)
@@ -130,20 +123,79 @@ def initialize_sessions() -> None:
             session.setdefault("proactive_recommendations", [])
             session.setdefault("pending_approvals", [])
 
+        st.session_state.all_user_sessions[session_key] = user_sessions
+
+    # Set current sessions for this user
+    st.session_state.chat_sessions = st.session_state.all_user_sessions[session_key]
+
+    if not st.session_state.chat_sessions:
+        first_session = _new_session()
+        first_session["user_id"] = user_id
+        first_session["user_role"] = st.session_state.get("user_role", "general")
+        st.session_state.chat_sessions[first_session["id"]] = first_session
+        st.session_state.active_session_id = first_session["id"]
+    else:
+        st.session_state.active_session_id = next(iter(st.session_state.chat_sessions))
+
 
 def active_session() -> dict:
     return st.session_state.chat_sessions[st.session_state.active_session_id]
 
 
 def _persist_sessions() -> None:
-    """Save current sessions to disk."""
-    save_sessions(st.session_state.chat_sessions)
+    """Save all user sessions to disk."""
+    all_sessions = {}
+    for user_sessions in st.session_state.get("all_user_sessions", {}).values():
+        all_sessions.update(user_sessions)
+    save_sessions(all_sessions)
 
 
 def start_new_session() -> None:
     session = _new_session()
+    session["user_id"] = st.session_state.get("user_id")
+    session["user_role"] = st.session_state.get("user_role", "general")
     st.session_state.chat_sessions[session["id"]] = session
     st.session_state.active_session_id = session["id"]
+    _persist_sessions()
+
+
+def switch_user(new_user_id: str | None, new_role: str) -> None:
+    """Switch to a different user/role with full session isolation."""
+    old_user_id = st.session_state.get("user_id")
+    old_session_key = old_user_id or "guest"
+
+    # Save old user's sessions
+    if old_session_key in st.session_state.get("all_user_sessions", {}):
+        st.session_state.all_user_sessions[old_session_key] = st.session_state.chat_sessions
+
+    # Set new user
+    st.session_state.user_id = new_user_id
+    st.session_state.user_role = new_role
+    st.session_state.logged_in = new_user_id is not None
+
+    # Clear current sessions to force reload for new user
+    new_session_key = new_user_id or "guest"
+    if new_session_key in st.session_state.get("all_user_sessions", {}):
+        st.session_state.chat_sessions = st.session_state.all_user_sessions[new_session_key]
+        if st.session_state.chat_sessions:
+            st.session_state.active_session_id = next(iter(st.session_state.chat_sessions))
+        else:
+            # Create new session for new user
+            first_session = _new_session()
+            first_session["user_id"] = new_user_id
+            first_session["user_role"] = new_role
+            st.session_state.chat_sessions[first_session["id"]] = first_session
+            st.session_state.active_session_id = first_session["id"]
+            st.session_state.all_user_sessions[new_session_key] = st.session_state.chat_sessions
+    else:
+        # New user, create first session
+        first_session = _new_session()
+        first_session["user_id"] = new_user_id
+        first_session["user_role"] = new_role
+        st.session_state.chat_sessions = {first_session["id"]: first_session}
+        st.session_state.active_session_id = first_session["id"]
+        st.session_state.all_user_sessions[new_session_key] = st.session_state.chat_sessions
+
     _persist_sessions()
 
 
@@ -179,9 +231,8 @@ def render_sidebar() -> None:
             st.subheader("Login")
             mode = st.radio("Mode", ["General (No Login)", "Employee Login", "HR Login"], horizontal=False)
             if mode == "General (No Login)":
-                st.session_state.user_role = "general"
                 if st.button("Continue as Guest", use_container_width=True, type="primary"):
-                    st.session_state.logged_in = True
+                    switch_user(None, "general")
                     st.rerun()
             elif mode == "HR Login":
                 hr_ids = [e.get("employee_id") for e in auth.get_all_employees() if e.get("department", "").upper() == "HR"]
@@ -196,9 +247,7 @@ def render_sidebar() -> None:
                         elif auth.is_account_locked(selected_id):
                             st.error("Account is locked. Please contact IT support.")
                         elif auth.validate_password(selected_id, password):
-                            st.session_state.logged_in = True
-                            st.session_state.user_id = selected_id
-                            st.session_state.user_role = "hr"
+                            switch_user(selected_id, "hr")
                             st.rerun()
                         else:
                             st.error("Invalid password. Please try again.")
@@ -215,9 +264,7 @@ def render_sidebar() -> None:
                         elif auth.is_account_locked(selected_id):
                             st.error("Account is locked. Please contact IT support.")
                         elif auth.validate_password(selected_id, password):
-                            st.session_state.logged_in = True
-                            st.session_state.user_id = selected_id
-                            st.session_state.user_role = "employee"
+                            switch_user(selected_id, "employee")
                             st.rerun()
                         else:
                             st.error("Invalid password. Please try again.")
@@ -235,9 +282,8 @@ def render_sidebar() -> None:
                 dept = auth.get_employee_department(user_id)
                 st.success(f"{name} ({user_id}) — {dept}")
             if st.button("Logout", use_container_width=True):
+                switch_user(None, "general")
                 st.session_state.logged_in = False
-                st.session_state.user_id = None
-                st.session_state.user_role = None
                 st.rerun()
 
         st.divider()
@@ -247,46 +293,8 @@ def render_sidebar() -> None:
             st.rerun()
 
         st.divider()
-        st.caption("YOUR SESSIONS")
-        sessions = list(st.session_state.chat_sessions.values())
-        sessions.sort(key=lambda item: item["created_at"], reverse=True)
-        for session in sessions:
-            is_active = session["id"] == st.session_state.active_session_id
-            created = datetime.fromisoformat(session["created_at"])
-            time_label = created.strftime("%b %d, %H:%M")
-            button_label = f"{session['title']}  \n*{time_label}*"
-            if st.button(
-                button_label,
-                key=f"session-{session['id']}",
-                use_container_width=True,
-                type="primary" if is_active else "secondary",
-            ):
-                st.session_state.active_session_id = session["id"]
-                st.rerun()
-
-        st.divider()
-        if len(sessions) > 1 and st.button("Delete current chat", use_container_width=True):
-            deleted_id = st.session_state.active_session_id
-            del st.session_state.chat_sessions[deleted_id]
-            st.session_state.active_session_id = next(iter(st.session_state.chat_sessions))
-            _persist_sessions()
-            st.rerun()
-
-        st.caption("Messages are retained separately for each open session.")
-        with st.expander("Activity log", expanded=False):
-            activity = active_session()["activity"]
-            if activity:
-                for item in activity:
-                    details = ", ".join(
-                        f"{key}={value}" for key, value in item.items() if key not in {"timestamp", "event"}
-                    )
-                    st.caption(f"{item['timestamp']} | {item['event']} | {details}")
-            else:
-                st.caption("No activity recorded for this session yet.")
-            st.caption(f"Persistent log file: {LOG_FILE}")
 
         # ── Proactive Recommendations Panel (Role-Based) ──
-        st.divider()
         user_role = st.session_state.user_role
         user_id = st.session_state.user_id
 
@@ -294,7 +302,15 @@ def render_sidebar() -> None:
             if st.button("Refresh Events", use_container_width=True, key="refresh_proactive"):
                 engine = ProactiveEngine()
                 if user_role == "general":
-                    recs = engine.run_pipeline()
+                    all_recs = engine.run_pipeline()
+                    # General mode: only show company-wide events, exclude individual employee-specific ones
+                    individual_keywords = ["leave", "expense", "travel", "ticket", "warranty", "document", "approval", "request", "replacement", "follow up"]
+                    recs = []
+                    for r in all_recs:
+                        title_lower = r.title.lower()
+                        is_individual = any(kw in title_lower for kw in individual_keywords)
+                        if not is_individual:
+                            recs.append(r)
                 elif user_role == "hr":
                     all_recs = engine.run_pipeline()
                     hr_recs = [r for r in all_recs if r.employee_id == user_id or auth.is_hr(r.employee_id)]
@@ -459,6 +475,46 @@ def render_sidebar() -> None:
                             st.rerun()
             else:
                 st.caption("No proactive recommendations. Click Refresh to check.")
+
+        st.divider()
+
+        # ── Sessions Section ──
+        st.caption("YOUR SESSIONS")
+        sessions = list(st.session_state.chat_sessions.values())
+        sessions.sort(key=lambda item: item["created_at"], reverse=True)
+        for session in sessions:
+            is_active = session["id"] == st.session_state.active_session_id
+            created = datetime.fromisoformat(session["created_at"])
+            time_label = created.strftime("%b %d, %H:%M")
+            button_label = f"{session['title']}  \n*{time_label}*"
+            if st.button(
+                button_label,
+                key=f"session-{session['id']}",
+                use_container_width=True,
+                type="primary" if is_active else "secondary",
+            ):
+                st.session_state.active_session_id = session["id"]
+                st.rerun()
+
+        if len(sessions) > 1 and st.button("Delete current chat", use_container_width=True):
+            deleted_id = st.session_state.active_session_id
+            del st.session_state.chat_sessions[deleted_id]
+            st.session_state.active_session_id = next(iter(st.session_state.chat_sessions))
+            _persist_sessions()
+            st.rerun()
+
+        st.caption("Messages are retained separately for each open session.")
+        with st.expander("Activity log", expanded=False):
+            activity = active_session()["activity"]
+            if activity:
+                for item in activity:
+                    details = ", ".join(
+                        f"{key}={value}" for key, value in item.items() if key not in {"timestamp", "event"}
+                    )
+                    st.caption(f"{item['timestamp']} | {item['event']} | {details}")
+            else:
+                st.caption("No activity recorded for this session yet.")
+            st.caption(f"Persistent log file: {LOG_FILE}")
 
         if ollama_is_available():
             st.success("Ollama connected")
@@ -2196,17 +2252,29 @@ initialize_sessions()
 render_sidebar()
 
 st.title("Enterprise AI")
-st.caption("Ask naturally. Your message is automatically routed to the appropriate workplace specialist.")
 
 messages = active_session()["messages"]
 if not messages:
     user_role = st.session_state.get("user_role", "general")
+    user_id = st.session_state.get("user_id")
+    auth = AuthManager()
+
     if user_role == "hr":
-        st.info("Welcome, HR! You can approve leave/expense requests, check balances, or manage employee records.")
+        name = auth.get_employee_name(user_id) if user_id else "HR"
+        st.success(f"Welcome, **{name}**! You are logged in as **HR**.")
+        st.info("You can approve leave/expense requests, check employee balances, or manage records. Use the **Proactive Recommendations** panel to review pending approvals.")
     elif user_role == "employee":
-        st.info("Welcome! You can apply for leave, submit expenses, raise IT tickets, or check your balances.")
+        name = auth.get_employee_name(user_id) if user_id else "Employee"
+        dept = auth.get_employee_department(user_id) if user_id else ""
+        st.success(f"Welcome, **{name}**! You are logged in as **{dept}** employee.")
+        st.info("You can apply for leave, submit expenses, raise IT tickets, or check your balances. Use the **Proactive Recommendations** panel to see your pending items.")
     else:
-        st.info("Try asking about IT support, leave, expenses, travel, or workplace policies.")
+        st.info("Welcome to **Enterprise AI**! You are browsing as a **Guest**. Ask about IT support, leave, expenses, travel, or workplace policies.")
+
+    st.caption("Ask naturally. Your message is automatically routed to the appropriate workplace specialist.")
+else:
+    st.caption("Ask naturally. Your message is automatically routed to the appropriate workplace specialist.")
+
 render_messages(messages)
 
 if prompt := st.chat_input("Message Enterprise AI"):
