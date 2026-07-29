@@ -539,6 +539,11 @@ By combining LangGraph-based agent orchestration, specialized enterprise tools, 
 <img width="1919" height="998" alt="Screenshot 2026-07-29 140534" src="https://github.com/user-attachments/assets/c983af6f-24af-46d4-aa22-eefab7b9c9e0" />
 
 
+<img width="1919" height="1010" alt="image" src="https://github.com/user-attachments/assets/b70cf8fd-2453-45b3-b96b-69fad2f5343b" />
+
+
+<img width="1919" height="1003" alt="image" src="https://github.com/user-attachments/assets/52d49537-c41e-4d59-9a2c-8e50fce4fe53" />
+
 
 ## Pro active recommendations
 
