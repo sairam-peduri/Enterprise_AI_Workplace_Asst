@@ -406,6 +406,9 @@ The Streamlit application will normally open at:
 ```text
 localhost:8501
 ```
+## Live URL
+
+https://udmsh7hhcsuzk9tz7gkj3o.streamlit.app/
 
 ## Login Credentials
 
@@ -545,9 +548,7 @@ By combining LangGraph-based agent orchestration, specialized enterprise tools, 
 
 ---
 
-## Live Link
 
-https://udmsh7hhcsuzk9tz7gkj3o.streamlit.app/
 
 
 
