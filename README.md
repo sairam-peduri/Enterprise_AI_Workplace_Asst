@@ -431,6 +431,26 @@ The Streamlit application will normally open at:
 localhost:8501
 ```
 
+## Login Credentials
+
+After launching the application, log in using the appropriate credentials based on the selected mode.
+
+### Employee Mode
+- Use a valid Employee ID and its corresponding password.
+- The default password is the lowercase version of the Employee ID.
+- Example: `EMP002` → `emp002`
+
+### HR Mode
+- Use only authorized HR employee credentials.
+- The default password is the lowercase version of the HR Employee ID.
+- Example: `EMP001` → `emp001`
+
+### General Mode
+- General Mode provides access to all general EnterpriseAssist AI features without requiring employee authentication.
+- Users can interact with the AI assistant, access enterprise knowledge, and use available modules.
+
+> **Note:** Proactive recommendations are available only after logging in as an employee or HR user, as they require personalized employee context. Default passwords are provided for demonstration purposes only.
+
 ---
 
 ## Testing
