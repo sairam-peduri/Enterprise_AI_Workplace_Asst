@@ -552,12 +552,18 @@ By combining LangGraph-based agent orchestration, specialized enterprise tools, 
 
 ---
 
-##Output
+## Output
+
+
 <img width="1916" height="888" alt="Screenshot 2026-07-29 132636" src="https://github.com/user-attachments/assets/faf18a58-bfe0-4130-a5c7-0095eea3e17a" />
+
 
 <img width="1912" height="894" alt="Screenshot 2026-07-29 132737" src="https://github.com/user-attachments/assets/7d2317e3-3b1a-4d0f-a00f-b15a83dc0a91" />
 
+## Pro active recommendations
+
 <img width="1912" height="894" alt="Screenshot 2026-07-29 132737" src="https://github.com/user-attachments/assets/5d02b635-d0f9-461a-9fc7-ed28aacb4c79" />
+
 
 <img width="1884" height="885" alt="Screenshot 2026-07-29 132834" src="https://github.com/user-attachments/assets/62a79618-f9bf-492a-bf3e-c2b5de163d1a" />
 
@@ -565,7 +571,7 @@ By combining LangGraph-based agent orchestration, specialized enterprise tools, 
 
 ##Live Link
 
-https://chat.google.com/room/AAQA07Z83fY/28oKabTN8BM/28oKabTN8BM?cls=10
+https://udmsh7hhcsuzk9tz7gkj3o.streamlit.app/
 
 
 
