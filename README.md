@@ -85,32 +85,8 @@ Examples include:
 
 The application follows a multi-agent architecture.
 
-```text
-                        User
-                          │
-                          ▼
-                 Streamlit Interface
-                          │
-                          ▼
-                  LangGraph Workflow
-                          │
-                          ▼
-                     Supervisor
-                          │
-          ┌───────────────┼───────────────┐
-          │               │               │
-          ▼               ▼               ▼
-       HR Agent       Finance Agent    IT Agent
-          │               │               │
-          └───────────┬───┴───────────────┘
-                      │
-               ┌──────┴──────┐
-               ▼             ▼
-          Travel Agent   Knowledge Agent
-                              │
-                              ▼
-                         RAG / ChromaDB
-```
+<img width="957" height="1024" alt="1000154964" src="https://github.com/user-attachments/assets/933a4f5c-73bc-4e7b-b10c-ffc512bdf238" />
+
 
 Each agent has access only to the tools required for its domain.
 
